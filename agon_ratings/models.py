@@ -1,0 +1,51 @@
+import datetime
+
+from decimal import Decimal
+
+from django.db import models
+
+from django.contrib.auth.models import User
+from django.contrib.contenttypes.generic import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+
+from agon_ratings.managers import OverallRatingManager
+
+
+class OverallRating(models.Model):
+    
+    object_id = models.IntegerField(db_index=True)
+    content_type = models.ForeignKey(ContentType)
+    content_object = GenericForeignKey()
+    rating = models.DecimalField(decimal_places=1, max_digits=3, null=True)
+    
+    objects = OverallRatingManager()
+    
+    class Meta:
+        unique_together = [
+            ("object_id", "content_type"),
+        ]
+    
+    def update(self):
+        self.rating = Rating.objects.filter(
+            overall_rating = self
+        ).aggregate(r = models.Avg("rating"))["r"]
+        self.rating = Decimal(str(self.rating or "0"))
+        self.save()
+
+
+class Rating(models.Model):
+    overall_rating = models.ForeignKey(OverallRating, null = True, related_name = "ratings")
+    object_id = models.IntegerField(db_index=True)
+    content_type = models.ForeignKey(ContentType)
+    content_object = GenericForeignKey()
+    user = models.ForeignKey(User)
+    rating = models.IntegerField()
+    timestamp = models.DateTimeField(default=datetime.datetime.now)
+    
+    class Meta:
+        unique_together = [
+            ("object_id", "content_type", "user"),
+        ]
+    
+    def __unicode__(self):
+        return unicode(self.rating)

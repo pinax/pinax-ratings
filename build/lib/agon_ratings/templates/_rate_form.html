@@ -1,0 +1,4 @@
+<form action="{% url agon_ratings_rate content_type_id=ct.id object_id=obj.pk %}" method="POST">
+    {% csrf_token %
+    <input type="hidden" name="rating" id="id_rating" />
+</form>
