@@ -1,4 +1,6 @@
 from django import template
+from django.conf import settings
+from django.core.urlresolvers import reverse
 
 from django.contrib.contenttypes.models import ContentType
 
@@ -6,6 +8,19 @@ from agon_ratings.models import Rating, OverallRating
 
 
 register = template.Library()
+
+
+def get_user_rating(user, obj):
+    try:
+        ct = ContentType.objects.get_for_model(obj)
+        rating = Rating.objects.get(
+            object_id = obj.pk,
+            content_type = ct,
+            user = user
+        ).rating
+    except Rating.DoesNotExist:
+        rating = 0
+    return rating
 
 
 class UserRatingNode(template.Node):
@@ -29,16 +44,7 @@ class UserRatingNode(template.Node):
     def render(self, context):
         user = self.user.resolve(context)
         obj = self.obj.resolve(context)
-        try:
-            ct = ContentType.objects.get_for_model(obj)
-            rating = Rating.objects.get(
-                object_id = obj.pk,
-                content_type = ct,
-                user = user
-            ).rating
-        except Rating.DoesNotExist:
-            rating = 0
-        context[self.as_var] = rating
+        context[self.as_var] = get_user_rating(user, obj)
         return ""
 
 
@@ -90,7 +96,21 @@ def overall_rating(parser, token):
     return OverallRatingNode.handle_token(parser, token)
 
 
-@register.inclusion_tag("agon_ratings/_rate_form.html")
-def user_rate_form(obj):
+@register.inclusion_tag("agon_ratings/_script.html")
+def user_rating_js(user, obj):
     ct = ContentType.objects.get_for_model(obj)
-    return {"ct": ct, "obj": obj}
+    post_url = reverse(
+        "agon_ratings_rate",
+        kwargs = {
+            "content_type_id": ct.pk,
+            "object_id": obj.pk
+        }
+    )
+    rating = get_user_rating(user, obj)
+    
+    return {
+        "obj": obj,
+        "post_url": post_url,
+        "the_user_rating": rating,
+        "STATIC_URL": settings.STATIC_URL
+    }

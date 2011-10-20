@@ -7,8 +7,8 @@ Templates
 from the template tags for displaying the rating form.
 
 
-_rate_form.html
----------------
+_script.html
+------------
 
-This is a snippet that renders the form that is submitted via AJAX to clear, update,
-or set a rating.
+This is a snippet that renders the bundled Javascript and a simple AJAX posting and
+hooking up of a rating UI. This is optional and overridable by the site developer.

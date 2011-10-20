@@ -1,0 +1,38 @@
+<script type="text/javascript" src="{{ STATIC_URL }}agon_ratings/js/ajax_csrf.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}agon_ratings/js/jquery.raty.js"></script>
+<script type="text/javascript">
+    $(function () {
+        // Assumptions:
+        // 1. you have a div with the id of "user_rating" where you want the stars to go
+        // 2. you have a container with the class .overall_rating where the new average rating will go
+        $("#user_rating").raty({
+            start: "{{ the_user_rating }}",
+            click: function(score, evt) {
+                var current_rating = 0;
+                if (score != null) {
+                    current_rating = score;
+                }
+                
+                $.ajax({
+                    url: "{{ post_url }}",
+                    type: "POST",
+                    data: {
+                        "rating": current_rating
+                    },
+                    statusCode: {
+                        403: function(jqXHR, textStatus, errorThrown) {
+                            // Invalid rating was posted
+                            console.log(errorThrown);
+                        },
+                        200: function(data, textStatus, jqXHR) {
+                            $(".overall_rating").text(data["overall_rating"]);
+                        }
+                    }
+                });
+            },
+            cancel: true,
+            path: "{{ STATIC_URL }}agon_ratings/img/"
+        });
+    });
+    </script>
+</script>
