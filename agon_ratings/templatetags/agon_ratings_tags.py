@@ -96,8 +96,7 @@ def overall_rating(parser, token):
     return OverallRatingNode.handle_token(parser, token)
 
 
-@register.inclusion_tag("agon_ratings/_script.html")
-def user_rating_js(user, obj):
+def rating_post_url(user, obj):
     ct = ContentType.objects.get_for_model(obj)
     post_url = reverse(
         "agon_ratings_rate",
@@ -106,6 +105,12 @@ def user_rating_js(user, obj):
             "object_id": obj.pk
         }
     )
+    return post_url
+
+
+@register.inclusion_tag("agon_ratings/_script.html")
+def user_rating_js(user, obj):
+    post_url = rating_post_url(user, obj)
     rating = get_user_rating(user, obj)
     
     return {
@@ -114,3 +119,9 @@ def user_rating_js(user, obj):
         "the_user_rating": rating,
         "STATIC_URL": settings.STATIC_URL
     }
+
+
+@register.simple_tag
+def user_rating_url(user, obj):
+    return rating_post_url(user, obj)
+
