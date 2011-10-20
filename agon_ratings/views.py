@@ -40,7 +40,6 @@ def rate(request, content_type_id, object_id):
         except Rating.DoesNotExist:
             pass
     elif 1 <= rating_input <= NUM_OF_RATINGS: # set the rating
-        print rating_input
         rating, created = Rating.objects.get_or_create(
             object_id = obj.pk,
             content_type = ct,
