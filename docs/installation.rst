@@ -7,7 +7,7 @@ Installation
 
     pip install agon_ratings
 
-* Add ``kaleo`` to your ``INSTALLED_APPS`` setting::
+* Add ``agon_ratings`` to your ``INSTALLED_APPS`` setting::
 
     INSTALLED_APPS = (
         # other apps
