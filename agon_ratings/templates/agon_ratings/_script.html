@@ -17,15 +17,20 @@
                     url: "{{ post_url }}",
                     type: "POST",
                     data: {
-                        "rating": current_rating
+                        "rating": current_rating,
+                        "category": "{{ category }}"
                     },
                     statusCode: {
                         403: function(jqXHR, textStatus, errorThrown) {
-                            // Invalid rating was posted
+                            // Invalid rating was posted or invalid category was sent
                             console.log(errorThrown);
                         },
                         200: function(data, textStatus, jqXHR) {
-                            $(".overall_rating").text(data["overall_rating"]);
+                            {% if category %}
+                                $(".overall_rating.category-{{ category }}").text(data["overall_rating"]);
+                            {% else %}
+                                $(".overall_rating").text(data["overall_rating"]);
+                            {% endif %}
                         }
                     }
                 });
