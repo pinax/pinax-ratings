@@ -7,6 +7,7 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 
+from agon_ratings.categories import category_value
 from agon_ratings.models import Rating, OverallRating
 
 
@@ -19,10 +20,26 @@ def rate(request, content_type_id, object_id):
     ct = get_object_or_404(ContentType, pk=content_type_id)
     obj = get_object_or_404(ct.model_class(), pk=object_id)
     rating_input = int(request.POST.get("rating"))
+    category = request.POST.get("category")
+    if category:
+        cat_choice = category_value(obj, category)
+    else:
+        cat_choice = None
+    
+    # Check for errors and bail early
+    if category is not None and cat_choice is None:
+        return HttpResponseForbidden(
+            "Invalid category. It must match a preconfigured setting"
+        )
+    if rating_input not in range(NUM_OF_RATINGS + 1):
+        return HttpResponseForbidden(
+            "Invalid rating. It must be a value between 0 and %s" % NUM_OF_RATINGS
+        )
     
     data = {
         "user_rating": rating_input,
-        "overall_rating": 0
+        "overall_rating": 0,
+        "category": category
     }
     
     # @@@ Seems like this could be much more DRY with a model method or something
@@ -31,7 +48,8 @@ def rate(request, content_type_id, object_id):
             rating = Rating.objects.get(
                 object_id = object_id,
                 content_type = ct,
-                user = request.user
+                user = request.user,
+                category = cat_choice
             )
             overall = rating.overall_rating
             rating.delete()
@@ -39,27 +57,25 @@ def rate(request, content_type_id, object_id):
             data["overall_rating"] = str(overall.rating)
         except Rating.DoesNotExist:
             pass
-    elif 1 <= rating_input <= NUM_OF_RATINGS: # set the rating
+    else: # set the rating
         rating, created = Rating.objects.get_or_create(
             object_id = obj.pk,
             content_type = ct,
             user = request.user,
+            category = cat_choice,
             defaults = {
                 "rating": rating_input
             }
         )
         overall, created = OverallRating.objects.get_or_create(
             object_id = obj.pk,
-            content_type = ct
+            content_type = ct,
+            category = cat_choice
         )
         rating.overall_rating = overall
         rating.rating = rating_input
         rating.save()
         overall.update()
         data["overall_rating"] = str(overall.rating)
-    else: # whoops
-        return HttpResponseForbidden(
-            "Invalid rating. It must be a value between 0 and %s" % NUM_OF_RATINGS
-        )
     
     return HttpResponse(json.dumps(data), mimetype="application/json")
