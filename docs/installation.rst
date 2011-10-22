@@ -22,3 +22,20 @@ Installation
     ...
     url(r"^ratings/", include("agon_ratings.urls")),
     ...
+
+* Optionally, if want to use the ratings category feature of `agon-ratings`
+  then you will need to add the `AGON_RATINGS_CATEGORY_CHOICES` setting
+  in your `settings.py`::
+
+    AGON_RATINGS_CATEGORY_CHOICES = {
+        "app.Model": {
+            "exposure": "How good is the exposure?",
+            "framing": "How well was the photo framed?",
+            "saturation": "How would you rate the saturation?"
+        },
+        "app.Model2": {
+            "grammar": "Good grammar?",
+            "complete": "Is the story complete?",
+            "compelling": "Is the article compelling?"
+        }
+    }
