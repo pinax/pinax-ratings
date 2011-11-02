@@ -17,12 +17,20 @@ register = template.Library()
 def user_rating_value(user, obj, category=None):
     try:
         ct = ContentType.objects.get_for_model(obj)
-        rating = Rating.objects.get(
-            object_id = obj.pk,
-            content_type = ct,
-            user = user,
-            category = category_value(obj, category)
-        ).rating
+        if category is None:
+            rating = Rating.objects.filter(
+                object_id = obj.pk,
+                content_type = ct,
+                user = user
+            ).aggregate(r = models.Avg("rating"))["r"]
+            rating = Decimal(str(rating or "0"))
+        else:
+            rating = Rating.objects.get(
+                object_id = obj.pk,
+                content_type = ct,
+                user = user,
+                category = category_value(obj, category)
+            ).rating
     except Rating.DoesNotExist:
         rating = 0
     return rating
