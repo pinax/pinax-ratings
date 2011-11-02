@@ -9,6 +9,8 @@ ChangeLog
 - added ability in overall_rating template tag to omit the category
   label and get an average rating without concern for category
   averages.
+- added ability to get average rating over all categories for a
+  particular user and particular object.
 
 
 0.2
