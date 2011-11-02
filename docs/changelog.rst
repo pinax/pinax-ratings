@@ -3,6 +3,14 @@
 ChangeLog
 =========
 
+0.2.1
+-----
+
+- added ability in overall_rating template tag to omit the category
+  label and get an average rating without concern for category
+  averages.
+
+
 0.2
 ---
 
