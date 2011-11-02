@@ -1,4 +1,7 @@
+from decimal import Decimal
+
 from django import template
+from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
@@ -104,11 +107,18 @@ class OverallRatingNode(template.Node):
         
         try:
             ct = ContentType.objects.get_for_model(obj)
-            rating = OverallRating.objects.get(
-                object_id = obj.pk,
-                content_type = ct,
-                category = category_value(obj, category)
-            ).rating or 0
+            if category is None:
+                rating = OverallRating.objects.filter(
+                    object_id = obj.pk,
+                    content_type = ct
+                ).aggregate(r = models.Avg("rating"))["r"]
+                rating = Decimal(str(rating or "0"))
+            else:
+                rating = OverallRating.objects.get(
+                    object_id = obj.pk,
+                    content_type = ct,
+                    category = category_value(obj, category)
+                ).rating or 0
         except OverallRating.DoesNotExist:
             rating = 0
         context[self.as_var] = rating
