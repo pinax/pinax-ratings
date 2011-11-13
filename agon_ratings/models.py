@@ -17,7 +17,7 @@ class OverallRating(models.Model):
     object_id = models.IntegerField(db_index=True)
     content_type = models.ForeignKey(ContentType)
     content_object = GenericForeignKey()
-    rating = models.DecimalField(decimal_places=1, max_digits=3, null=True)
+    rating = models.DecimalField(decimal_places=1, max_digits=6, null=True)
     
     category = models.IntegerField(null=True, choices=RATING_CATEGORY_CHOICES)
     
