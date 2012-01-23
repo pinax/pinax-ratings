@@ -27,16 +27,18 @@ Likewise for displaying a user's rating::
     <div class="user_rating">{{ the_user_rating }}</div>
 
 
-If you want to add an AJAX form for allowing a user to set a rating, add the
+If you want to add a form for allowing a user to set a rating, add the
 following in the appropriate location on your page::
 
-    <div id="user_rating"></div>
+    {% user_rating_widget request.user obj %}
 
 
-And then add this near the end of your HTML `<body>` to emit some Javascript
-libraries and hook up the ratings UI::
+And then add these tags in the head of your page, or at the bottom of the HTML 
+`<body>` element to emit the JavaScript and CSS files required. Developers are
+encouraged to use the provided CSS file as an example and develop their own.::
 
-    {% user_rating_js request.user obj %}
+    {% user_rating_js %}
+    {% user_rating_css %}
 
 
 If you want to do any rating based on categories of ratings for an object or
@@ -49,6 +51,7 @@ the tags::
         {{ category_rating }}
     </div>
 
+
 and::
 
     {% user_rating request.user obj "accuracy" as category_rating %}
@@ -57,8 +60,7 @@ and::
         {{ category_rating }}
     </div>
 
+
 and::
 
-    <div id="user_rating" class="category-accuracy"></div>
-    
-    {% user_rating_js request.user obj "accuracy" %}
+    {% user_rating_widget request.user obj "accuracy" %}
