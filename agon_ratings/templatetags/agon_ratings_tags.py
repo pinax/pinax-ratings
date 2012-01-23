@@ -8,7 +8,6 @@ from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from django.contrib.contenttypes.models import ContentType
 
-from agon_ratings.categories import category_value
 from agon_ratings.models import Rating, OverallRating
 
 
@@ -16,24 +15,18 @@ register = template.Library()
 
 
 def user_rating_value(user, obj, category=None):
+
+    rating = None
     try:
-        ct = ContentType.objects.get_for_model(obj)
-        if category is None:
-            rating = Rating.objects.filter(
-                object_id = obj.pk,
-                content_type = ct,
-                user = user
-            ).aggregate(r = models.Avg("rating"))["r"]
-            rating = Decimal(str(rating or "0"))
-        else:
-            rating = Rating.objects.get(
-                object_id = obj.pk,
-                content_type = ct,
-                user = user,
-                category = category_value(obj, category)
-            ).rating
+        rating = Rating.objects.get(
+            user = user,
+            category=category,
+            content_type=ContentType.objects.get_for_model(obj),
+            object_id=obj.pk,
+        ).rating
     except Rating.DoesNotExist:
-        rating = 0
+        pass
+
     return rating
 
 
@@ -148,11 +141,15 @@ class OverallRatingNode(template.Node):
     @classmethod
     def handle_token(cls, parser, token):
         bits = token.split_contents()
+        number_format = None
+        category = None
         
-        if len(bits) == 4:
-            category = None
-        elif len(bits) == 5:
+        guard_argument_count(bits, min_count=4, max_count=6)
+        
+        if len(bits) >= 5:
             category = parser.compile_filter(bits[2])
+        if len(bits) >= 6:
+            number_format = parser.compile_filter(bits[3])
         else:
             raise template.TemplateSyntaxError()
         
@@ -176,18 +173,11 @@ class OverallRatingNode(template.Node):
         
         try:
             ct = ContentType.objects.get_for_model(obj)
-            if category is None:
-                rating = OverallRating.objects.filter(
-                    object_id = obj.pk,
-                    content_type = ct
-                ).aggregate(r = models.Avg("rating"))["r"]
-                rating = Decimal(str(rating or "0"))
-            else:
-                rating = OverallRating.objects.get(
-                    object_id = obj.pk,
-                    content_type = ct,
-                    category = category_value(obj, category)
-                ).rating or 0
+            rating = OverallRating.objects.get(
+                object_id = obj.pk,
+                content_type = ct,
+                category = category,
+            ).rating
         except OverallRating.DoesNotExist:
             rating = 0
         context[self.as_var] = rating
