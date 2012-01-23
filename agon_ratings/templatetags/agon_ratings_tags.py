@@ -149,44 +149,28 @@ class UserRatingWidgetNode(template.Node):
 def user_rating_widget(parser, token):
     return UserRatingWidgetNode.handle_token(parser, token)
 
-
-number_formats = {
-    "actual":  lambda v: v,
-    "percent": lambda v: (float(v) / NUM_OF_RATINGS) * 100,
-    "decimal": lambda v: float(v) / NUM_OF_RATINGS,
-}
-
 class OverallRatingNode(template.Node):
     
     @classmethod
     def handle_token(cls, parser, token):
         bits = token.split_contents()
-        number_format = None
         category = None
         
-        guard_argument_count(bits, min_count=4, max_count=6)
-        
-        guard_argument_count(bits, min_count=4, max_count=6)
+        guard_argument_count(bits, min_count=4, max_count=5)
         
         if len(bits) >= 5:
             category = parser.compile_filter(bits[2])
-        if len(bits) >= 6:
-            number_format = parser.compile_filter(bits[3])
         
         return cls(
-            tag_name = bits[0],
             obj = parser.compile_filter(bits[1]),
             as_var = bits[len(bits) - 1],
             category = category,
-            number_format = number_format,
         )
     
-    def __init__(self, tag_name, obj, as_var, category=None, number_format=None):
-        self.tag_name = tag_name
+    def __init__(self, obj, as_var, category=None):
         self.obj = obj
         self.as_var = as_var
         self.category = category
-        self.number_format = number_format
     
     def render(self, context):
 
@@ -195,12 +179,6 @@ class OverallRatingNode(template.Node):
             category = self.category.resolve(context)
         else:
             category = None
-
-        number_format = "actual"
-        if self.number_format:
-            number_format = self.number_format.resolve(context)
-            if number_format not in number_formats:
-                raise template.TemplateSyntaxError("%s is not a valid number format for %r. Valid formats are %s" % (number_format, self.tag_name, ", ".join(number_formats.keys())))
         
         try:
             ct = ContentType.objects.get_for_model(obj)
@@ -212,8 +190,7 @@ class OverallRatingNode(template.Node):
         except OverallRating.DoesNotExist:
             rating = 0
 
-        adjusted_rating = number_formats[number_format](rating)
-        context[self.as_var] = adjusted_rating
+        context[self.as_var] = rating
         return ""
 
 
