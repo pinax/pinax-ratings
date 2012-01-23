@@ -14,6 +14,13 @@ from agon_ratings.models import Rating, OverallRating
 register = template.Library()
 
 
+def guard_argument_count(bits, min_count, max_count):
+    if len(bits) < min_count:
+        raise template.TemplateSyntaxError("Too few arguments provided to %r" % bits[0])
+    if len(bits) > max_count:
+        raise template.TemplateSyntaxError("Too many arguments provided to %r" % bits[0])
+
+
 def user_rating_value(user, obj, category=None):
 
     rating = None
@@ -35,13 +42,13 @@ class UserRatingNode(template.Node):
     @classmethod
     def handle_token(cls, parser, token):
         bits = token.split_contents()
-        
+
+        guard_argument_count(bits, min_count=5, max_count=6)
+
         if len(bits) == 5:
             category = None
         elif len(bits) == 6:
             category = parser.compile_filter(bits[3])
-        else:
-            raise template.TemplateSyntaxError()
         
         return cls(
             user = parser.compile_filter(bits[1]),
@@ -63,6 +70,7 @@ class UserRatingNode(template.Node):
             category = self.category.resolve(context)
         else:
             category = None
+
         context[self.as_var] = user_rating_value(user, obj, category)
         return ""
 
@@ -80,13 +88,13 @@ class UserRatingWidgetNode(template.Node):
     @classmethod
     def handle_token(cls, parser, token):
         bits = token.split_contents()
+        
+        guard_argument_count(bits, min_count=3, max_count=4)
 
         if len(bits) == 3:
             category = None
         elif len(bits) == 4:
             category = parser.compile_filter(bits[3])
-        else:
-            raise template.TemplateSyntaxError()
 
         return cls(
             user = parser.compile_filter(bits[1]),
@@ -146,12 +154,12 @@ class OverallRatingNode(template.Node):
         
         guard_argument_count(bits, min_count=4, max_count=6)
         
+        guard_argument_count(bits, min_count=4, max_count=6)
+        
         if len(bits) >= 5:
             category = parser.compile_filter(bits[2])
         if len(bits) >= 6:
             number_format = parser.compile_filter(bits[3])
-        else:
-            raise template.TemplateSyntaxError()
         
         return cls(
             obj = parser.compile_filter(bits[1]),
