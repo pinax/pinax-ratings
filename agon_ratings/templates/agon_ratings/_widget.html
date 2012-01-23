@@ -16,10 +16,10 @@
 
 	</form>
 {% endspaceless %}{% endblock agon_ratings_form %}
-{% block agon_ratings_js %}
+{% block agon_ratings_js %}{% if not user.is_anonymous %}
 	<script type="text/javascript">
 		jQuery(function($) {
             $("#{{ widget_id }}").agon({ currentRating: {% if current_rating %}{{ current_rating }}{% else %}null{% endif %} });
 		});
 	</script>
-{% endblock %}
+{% endif %}{% endblock %}

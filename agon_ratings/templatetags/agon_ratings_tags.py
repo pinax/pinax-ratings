@@ -26,6 +26,9 @@ def guard_argument_count(bits, min_count, max_count):
 
 def user_rating_value(user, obj, category=None):
 
+    if user.is_anonymous():
+        return None
+
     rating = None
     try:
         rating = Rating.objects.get(
