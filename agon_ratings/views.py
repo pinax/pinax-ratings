@@ -34,9 +34,10 @@ def rate(request, content_type_id, object_id):
         )
     
     data = {
-        "user_rating": rating_input,
-        "overall_rating": 0,
-        "category": category
+        "userRating": rating_input,
+        "overallRating": 0,
+        "category": category,
+        "numOfRatings": NUM_OF_RATINGS,
     }
 
     overall, created = OverallRating.objects.get_or_create(
