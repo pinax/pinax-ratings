@@ -1,0 +1,38 @@
+form.agon-ratings-widget {
+    display: inline-block;
+    margin-bottom: 0;
+}
+form.agon-ratings-widget.agon-ratings-processing:after {
+    display: inline-block;
+    content: "";
+    width: 16px;
+    height: 16px;
+    background-image: url('../img/ajax-loader.gif');
+    vertical-align: middle;
+}
+
+form.agon-ratings-widget button.agon-ratings-button {
+    width: 16px;
+    height: 16px;
+    text-indent: -99999px;
+    background: none transparent;
+    vertical-align: middle;
+
+    /* These will only work in webkit nightlies and chrom 18+ at the time of writing. Everything else works fine */
+    transition: background-image 0.5s;
+    -o-transition: background-image 0.5s;
+    -ms-transition: background-image 0.5s;
+    -moz-transition: background-image 0.5s;
+    -webkit-transition: background-image 0.5s;
+}
+
+form.agon-ratings-widget button.agon-ratings-less { background-image: url('../img/star-on.png'); }
+form.agon-ratings-widget button.agon-ratings-current { background-image: url('../img/star-on.png'); }
+form.agon-ratings-widget button.agon-ratings-more { background-image: url('../img/star-off.png'); }
+
+form.agon-ratings-widget button.agon-ratings-cancel,
+form.agon-ratings-widget.agon-ratings-unrated button.agon-ratings-cancel.agon-ratings-current { background-image: url('../img/cancel-off.png'); }
+
+form.agon-ratings-widget button.agon-ratings-cancel:hover { background-image: url('../img/cancel-on.png'); }
+form.agon-ratings-widget.agon-ratings-unrated button.agon-ratings-cancel:hover { background-image: url('../img/cancel-on.png'); }
+

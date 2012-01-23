@@ -5,6 +5,7 @@ from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
+from django.template.loader import render_to_string
 from django.contrib.contenttypes.models import ContentType
 
 from agon_ratings.categories import category_value
@@ -72,7 +73,6 @@ class UserRatingNode(template.Node):
         context[self.as_var] = user_rating_value(user, obj, category)
         return ""
 
-
 @register.tag
 def user_rating(parser, token):
     """
@@ -80,6 +80,67 @@ def user_rating(parser, token):
         {% user_rating user obj [category] as var %}
     """
     return UserRatingNode.handle_token(parser, token)
+
+
+class UserRatingWidgetNode(template.Node):
+
+    @classmethod
+    def handle_token(cls, parser, token):
+        bits = token.split_contents()
+
+        if len(bits) == 3:
+            category = None
+        elif len(bits) == 4:
+            category = parser.compile_filter(bits[3])
+        else:
+            raise template.TemplateSyntaxError()
+
+        return cls(
+            user = parser.compile_filter(bits[1]),
+            obj = parser.compile_filter(bits[2]),
+            category = category,
+        )
+
+    def __init__(self, user,obj, category=None):
+        self.user = user
+        self.obj = obj
+        self.category = category
+
+    def render(self, context):
+
+        user = self.user.resolve(context)
+        obj = self.obj.resolve(context)
+
+        app_name = obj._meta.app_label
+        model_name = obj._meta.object_name
+
+        if self.category:
+            category = self.category.resolve(context)
+            widget_id = 'agon_rating_%s_%s_%s_%s' % (app_name, model_name, category, obj.pk)
+        else:
+            category = None
+            widget_id = 'agon_rating_%s_%s_%s' % (app_name, model_name, obj.pk)
+
+        agon_rating_context = {
+            'widget_id': widget_id, # TODO make this configurable
+            'category': category,
+            'user': user,
+            'obj': obj,
+            'action_url': rating_post_url(user, obj),
+            'rating_range': range(1, getattr(settings, 'AGON_NUM_OF_RATINGS', 5) + 1),
+            'current_rating': user_rating_value(user, obj, category),
+        }
+
+        return render_to_string([
+            'agon_ratings/%s/%s_%s.html' % (app_name, model_name, category),
+            'agon_ratings/%s/%s_rating.html' % (app_name, model_name),
+            'agon_ratings/%s/rating.html' % (app_name),
+            'agon_ratings/_widget.html',
+        ], agon_rating_context, context)
+
+@register.tag
+def user_rating_widget(parser, token):
+    return UserRatingWidgetNode.handle_token(parser, token)
 
 
 class OverallRatingNode(template.Node):
@@ -155,17 +216,12 @@ def rating_post_url(user, obj):
 
 
 @register.inclusion_tag("agon_ratings/_script.html")
-def user_rating_js(user, obj, category=None):
-    post_url = rating_post_url(user, obj)
-    rating = user_rating_value(user, obj, category)
-    
-    return {
-        "obj": obj,
-        "post_url": post_url,
-        "category": category,
-        "the_user_rating": rating,
-        "STATIC_URL": settings.STATIC_URL,
-    }
+def user_rating_js():
+    return {"STATIC_URL": settings.STATIC_URL}
+
+@register.inclusion_tag("agon_ratings/_style.html")
+def user_rating_css():
+    return {"STATIC_URL": settings.STATIC_URL}
 
 
 @register.simple_tag
