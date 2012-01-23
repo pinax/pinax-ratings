@@ -11,6 +11,9 @@ from django.contrib.contenttypes.models import ContentType
 from agon_ratings.models import Rating, OverallRating
 
 
+NUM_OF_RATINGS = getattr(settings, "AGON_NUM_OF_RATINGS", 5)
+
+
 register = template.Library()
 
 
@@ -128,7 +131,7 @@ class UserRatingWidgetNode(template.Node):
             'user': user,
             'obj': obj,
             'action_url': rating_post_url(user, obj),
-            'rating_range': range(1, getattr(settings, 'AGON_NUM_OF_RATINGS', 5) + 1),
+            'rating_range': range(1, NUM_OF_RATINGS + 1),
             'current_rating': user_rating_value(user, obj, category),
         }
 
@@ -143,6 +146,12 @@ class UserRatingWidgetNode(template.Node):
 def user_rating_widget(parser, token):
     return UserRatingWidgetNode.handle_token(parser, token)
 
+
+number_formats = {
+    "actual":  lambda v: v,
+    "percent": lambda v: (float(v) / NUM_OF_RATINGS) * 100,
+    "decimal": lambda v: float(v) / NUM_OF_RATINGS,
+}
 
 class OverallRatingNode(template.Node):
     
@@ -162,22 +171,33 @@ class OverallRatingNode(template.Node):
             number_format = parser.compile_filter(bits[3])
         
         return cls(
+            tag_name = bits[0],
             obj = parser.compile_filter(bits[1]),
             as_var = bits[len(bits) - 1],
-            category = category
+            category = category,
+            number_format = number_format,
         )
     
-    def __init__(self, obj, as_var, category=None):
+    def __init__(self, tag_name, obj, as_var, category=None, number_format=None):
+        self.tag_name = tag_name
         self.obj = obj
         self.as_var = as_var
         self.category = category
+        self.number_format = number_format
     
     def render(self, context):
+
         obj = self.obj.resolve(context)
         if self.category:
             category = self.category.resolve(context)
         else:
             category = None
+
+        number_format = "actual"
+        if self.number_format:
+            number_format = self.number_format.resolve(context)
+            if number_format not in number_formats:
+                raise template.TemplateSyntaxError("%s is not a valid number format for %r. Valid formats are %s" % (number_format, self.tag_name, ", ".join(number_formats.keys())))
         
         try:
             ct = ContentType.objects.get_for_model(obj)
@@ -188,7 +208,9 @@ class OverallRatingNode(template.Node):
             ).rating
         except OverallRating.DoesNotExist:
             rating = 0
-        context[self.as_var] = rating
+
+        adjusted_rating = number_formats[number_format](rating)
+        context[self.as_var] = adjusted_rating
         return ""
 
 
