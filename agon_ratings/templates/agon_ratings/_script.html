@@ -26,8 +26,10 @@
                     url: "{{ post_url }}",
                     type: "POST",
                     data: {
-                        "rating": current_rating,
-                        "category": "{{ category }}"
+                        "rating": current_rating
+                        {% if category %}
+                        ,"category": "{{ category }}"
+                        {% endif %}
                     },
                     statusCode: {
                         403: function(jqXHR, textStatus, errorThrown) {
