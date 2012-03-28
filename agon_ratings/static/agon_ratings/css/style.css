@@ -1,0 +1,60 @@
+form.agon-ratings-widget {
+    display: inline-block;
+    margin-bottom: 0;
+}
+form.agon-ratings-widget.agon-ratings-processing:after {
+    display: inline-block;
+    content: "";
+    width: 16px;
+    height: 16px;
+    background-image: url('../img/ajax-loader.gif');
+    vertical-align: middle;
+}
+
+form.agon-ratings-widget button.agon-ratings-button {
+    width: 18px;
+    height: 16px;
+	border: solid transparent;
+	border-width: 0px 1px;
+    text-indent: -99999px;
+    background: none transparent;
+    vertical-align: middle;
+
+	background-image: url('../img/ratings-sprite.png');
+
+    /* These will only work in webkit nightlies and chrom 18+ at the time of writing. Everything else works fine */
+    transition: background 0.2s ease-out;
+    -o-transition: background 0.2s ease-out;
+    -ms-transition: background 0.2s ease-out;
+    -moz-transition: background 0.2s ease-out;
+    -webkit-transition: background 0.2s ease-out;
+}
+
+form.agon-ratings-widget button.agon-ratings-less { background-position: 0 0; }
+form.agon-ratings-widget button.agon-ratings-current { background-position: 0 0; }
+form.agon-ratings-widget button.agon-ratings-more { background-position: 0 -16px; }
+
+form.agon-ratings-widget button.agon-ratings-cancel { background-position: 16px 16px; }
+form.agon-ratings-widget button.agon-ratings-cancel:hover { background-position: 16px 0; }
+
+/* Optional extra CSS styles */
+
+/* Sprites that fit in the Bootstrap theme */
+form.agon-ratings-widget.agon-ratings-bootstrap button.agon-ratings-button {
+	background-image: url('../img/bootstrap-sprites.png');
+}
+
+/* Larger buttons and sprites */
+form.agon-ratings-widget.agon-ratings-big button.agon-ratings-button {
+	width: 26px;
+	height: 26px;
+	border-width: 0px;
+	background-image: url('../img/ratings-sprite-big.png');
+}
+
+form.agon-ratings-widget.agon-ratings-big button.agon-ratings-less { background-position: 0px 0px; }
+form.agon-ratings-widget.agon-ratings-big button.agon-ratings-current { background-position: 0px 0px; }
+form.agon-ratings-widget.agon-ratings-big button.agon-ratings-more { background-position: 0 -26px; }
+
+form.agon-ratings-widget.agon-ratings-big button.agon-ratings-cancel { background-position: 26px 26px; }
+form.agon-ratings-widget.agon-ratings-big button.agon-ratings-cancel:hover { background-position: 26px 0; }

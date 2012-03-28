@@ -1,0 +1,12 @@
+{% extends "site_base.html" %}
+
+{% load agon_ratings_tags %}
+
+{% block main %}
+    <h2>Rate {{ obj }}</h2>
+
+    <div class="ratings">
+        Overall rating: {{ recipe_rating }} stars.
+        Rate it: {% user_rating_widget request.user recipe %}
+    </div>
+{% endblock %}

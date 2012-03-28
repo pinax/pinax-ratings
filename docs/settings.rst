@@ -18,23 +18,17 @@ AGON_RATINGS_CATEGORY_CHOICES
 
 :Default: `None`
 
-Defines a dictionary of choices for different models for the application of
-ratings along different dimensions rather than just a single rating for an
-object.
+Defines the models that have rating enabled. Only models that are defined in this
+dict are allowed to be rated.
 
-It should follow the format of a dictionary of dictionaries. For example, think of
-the context of a website that allowed ratings of photographs and articles
-published by other users::
+Additionally, this dictionary defines the choices for different models for the
+application of ratings along different dimensions rather than just a single rating
+for an object.
 
     AGON_RATINGS_CATEGORY_CHOICES = {
-        "app.Model": {
-            "exposure": "How good is the exposure?",
-            "framing": "How well was the photo framed?",
-            "saturation": "How would you rate the saturation?"
-        },
-        "app.Model2": {
-            "grammar": "Good grammar?",
-            "complete": "Is the story complete?",
-            "compelling": "Is the article compelling?"
-        }
+        # Allow simple voting on the app.Post model
+        "app.Post": True,
+
+        # Allow voting on the exposure, framing and saturation of an app.Picture
+        "app.Picture": [ "exposure", "framing", "saturation" ],
     }

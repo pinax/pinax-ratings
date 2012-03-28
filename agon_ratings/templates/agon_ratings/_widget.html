@@ -1,0 +1,25 @@
+{% load i18n %}
+
+{% block agon_ratings_form %}{% spaceless %}
+<form class="agon-ratings agon-ratings-widget {% if not current_rating %}agon-ratings-unrated{% endif %} category-{{ category }} {{ css_class }}" id="{{ widget_id }}" action="{{ action_url }}" method="post">{% csrf_token %}
+
+		{% if category %}<input type="hidden" name="category" value="{{ category }}" />{% endif %}
+
+		<button name="rating" value="0" title="{% trans "Cancel rating" %}" class="agon-ratings-button agon-ratings-cancel agon-ratings-{% if current_rating %}less{% else %}current{% endif %}">{% trans "Cancel rating" %}</button>
+
+		{% for i in rating_range %}{% spaceless %}
+			<button name="rating"
+				value="{{ i }}"
+				title="{{ i }}"
+				class="agon-ratings-button agon-ratings-{% if current_rating > i %}less{% else %}{% if current_rating == i %}current{% else %}more{% endif %}{% endif %}">{{ i }}</button>
+		{% endspaceless %}{% endfor %}
+
+	</form>
+{% endspaceless %}{% endblock agon_ratings_form %}
+{% block agon_ratings_js %}{% if not user.is_anonymous %}
+	<script type="text/javascript">
+		jQuery(function($) {
+            $("#{{ widget_id }}").agon({ currentRating: {% if current_rating %}{{ current_rating }}{% else %}null{% endif %} });
+		});
+	</script>
+{% endif %}{% endblock %}
