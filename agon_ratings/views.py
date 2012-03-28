@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.utils import simplejson as json
 from django.views.decorators.http import require_POST
 
@@ -14,18 +14,23 @@ from agon_ratings.categories import is_valid_category
 NUM_OF_RATINGS = getattr(settings, "AGON_NUM_OF_RATINGS", 5)
 
 
-@require_POST
-@login_required
+@login_required(redirect_field_name='rate')
 def rate(request, content_type_id, object_id):
+
     ct = get_object_or_404(ContentType, pk=content_type_id)
     obj = get_object_or_404(ct.model_class(), pk=object_id)
-    rating_input = int(request.POST.get("rating"))
+    rating_input = int(request.POST.get("rating", -1))
 
     category = request.POST.get("category", None)
     if not is_valid_category(obj, category):
         return HttpResponseForbidden(
             "Invalid category. It must match a preconfigured setting"
         )
+
+    if request.method != 'POST':
+        return render(request, 'agon_ratings/rate_object.html', {
+            'obj': obj,
+        })
     
     # Check for errors and bail early
     if not (0 <= rating_input <= NUM_OF_RATINGS):
