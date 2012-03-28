@@ -95,23 +95,28 @@ class UserRatingWidgetNode(template.Node):
     def handle_token(cls, parser, token):
         bits = token.split_contents()
         
-        guard_argument_count(bits, min_count=3, max_count=4)
+        guard_argument_count(bits, min_count=3, max_count=5)
 
-        if len(bits) == 3:
-            category = None
-        elif len(bits) == 4:
+        category = None
+        css_class = None
+
+        if len(bits) >= 4:
             category = parser.compile_filter(bits[3])
+        if len(bits) >= 5:
+            css_class = parser.compile_filter(bits[4])
 
         return cls(
             user = parser.compile_filter(bits[1]),
             obj = parser.compile_filter(bits[2]),
             category = category,
+            css_class = css_class
         )
 
-    def __init__(self, user,obj, category=None):
+    def __init__(self, user,obj, category=None, css_class=None):
         self.user = user
         self.obj = obj
         self.category = category
+        self.css_class = css_class
 
     def render(self, context):
 
@@ -128,6 +133,11 @@ class UserRatingWidgetNode(template.Node):
             category = None
             widget_id = 'agon_rating_%s_%s_%s' % (app_name, model_name, obj.pk)
 
+        if self.css_class:
+            css_class = self.css_class.resolve(context)
+        else:
+            css_class = None
+
         agon_rating_context = {
             'widget_id': widget_id, # TODO make this configurable
             'category': category,
@@ -136,6 +146,7 @@ class UserRatingWidgetNode(template.Node):
             'action_url': rating_post_url(user, obj),
             'rating_range': range(1, NUM_OF_RATINGS + 1),
             'current_rating': user_rating_value(user, obj, category),
+            'css_class': css_class,
         }
 
         return render_to_string([

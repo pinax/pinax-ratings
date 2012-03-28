@@ -1,7 +1,7 @@
 {% load i18n %}
 
 {% block agon_ratings_form %}{% spaceless %}
-<form class="agon-ratings agon-ratings-widget {% if not current_rating %}agon-ratings-unrated{% endif %} category-{{ category }}" id="{{ widget_id }}" action="{{ action_url }}" method="post">{% csrf_token %}
+<form class="agon-ratings agon-ratings-widget {% if not current_rating %}agon-ratings-unrated{% endif %} category-{{ category }} {{ css_class }}" id="{{ widget_id }}" action="{{ action_url }}" method="post">{% csrf_token %}
 
 		{% if category %}<input type="hidden" name="category" value="{{ category }}" />{% endif %}
 
