@@ -37,13 +37,14 @@ form.agon-ratings-widget button.agon-ratings-more { background-position: 0 -16px
 form.agon-ratings-widget button.agon-ratings-cancel { background-position: 16px 16px; }
 form.agon-ratings-widget button.agon-ratings-cancel:hover { background-position: 16px 0; }
 
-form.agon-ratings-widget button.agon-ratings-less { background-position: 0 0; }
-form.agon-ratings-widget button.agon-ratings-current { background-position: 0 0; }
-form.agon-ratings-widget button.agon-ratings-more { background-position: 0 -16px; }
+/* Optional extra CSS styles */
 
-form.agon-ratings-widget button.agon-ratings-cancel { background-position: 16px 16px; }
-form.agon-ratings-widget button.agon-ratings-cancel:hover { background-position: 16px 0; }
+/* Sprites that fit in the Bootstrap theme */
+form.agon-ratings-widget.agon-ratings-bootstrap button.agon-ratings-button {
+	background-image: url('../img/bootstrap-sprites.png');
+}
 
+/* Larger buttons and sprites */
 form.agon-ratings-widget.agon-ratings-big button.agon-ratings-button {
 	width: 26px;
 	height: 26px;
