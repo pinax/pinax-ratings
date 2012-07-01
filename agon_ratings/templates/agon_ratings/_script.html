@@ -1,4 +1,13 @@
-<script type="text/javascript" src="{{ STATIC_URL }}agon_ratings/js/ajax_csrf.js"></script>
+<script>
+    (function($) {
+         $('html').ajaxSend(
+             function(event, xhr, settings) {
+                if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                }
+             });
+     })(jQuery);    
+</script>
 <script type="text/javascript" src="{{ STATIC_URL }}agon_ratings/js/jquery.raty.js"></script>
 <script type="text/javascript">
     $(function () {
@@ -17,8 +26,10 @@
                     url: "{{ post_url }}",
                     type: "POST",
                     data: {
-                        "rating": current_rating,
-                        "category": "{{ category }}"
+                        "rating": current_rating
+                        {% if category %}
+                        ,"category": "{{ category }}"
+                        {% endif %}
                     },
                     statusCode: {
                         403: function(jqXHR, textStatus, errorThrown) {
