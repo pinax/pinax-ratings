@@ -4,6 +4,8 @@ from decimal import Decimal
 
 from django.db import models
 
+from django.conf import settings
+
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -11,6 +13,7 @@ from django.contrib.contenttypes.models import ContentType
 from agon_ratings.categories import RATING_CATEGORY_CHOICES
 from agon_ratings.managers import OverallRatingManager
 
+USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', User)
 
 class OverallRating(models.Model):
     
@@ -41,7 +44,7 @@ class Rating(models.Model):
     object_id = models.IntegerField(db_index=True)
     content_type = models.ForeignKey(ContentType)
     content_object = GenericForeignKey()
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(USER_MODEL)
     rating = models.IntegerField()
     timestamp = models.DateTimeField(default=datetime.datetime.now)
     
