@@ -171,11 +171,14 @@ def user_rating_js(user, obj, category=None):
 @register.assignment_tag
 def ratings(obj):
     ct = ContentType.objects.get_for_model(obj)
-    return OverallRating.objects.get(
-        content_type=ct,
-        object_id=obj.pk,
-        category=None
-    ).ratings.all()
+    try:
+        return OverallRating.objects.get(
+            content_type=ct,
+            object_id=obj.pk,
+            category=None
+        ).ratings.all()
+    except OverallRating.DoesNotExist:
+        return []
 
 
 @register.simple_tag
