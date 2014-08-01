@@ -15,6 +15,7 @@ from agon_ratings.managers import OverallRatingManager
 
 USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', User)
 
+
 class OverallRating(models.Model):
 
     object_id = models.IntegerField(db_index=True)
@@ -33,14 +34,14 @@ class OverallRating(models.Model):
 
     def update(self):
         self.rating = Rating.objects.filter(
-            overall_rating = self
-        ).aggregate(r = models.Avg("rating"))["r"]
+            overall_rating=self
+        ).aggregate(r=models.Avg("rating"))["r"]
         self.rating = Decimal(str(self.rating or "0"))
         self.save()
 
 
 class Rating(models.Model):
-    overall_rating = models.ForeignKey(OverallRating, null = True, related_name = "ratings")
+    overall_rating = models.ForeignKey(OverallRating, null=True, related_name="ratings")
     object_id = models.IntegerField(db_index=True)
     content_type = models.ForeignKey(ContentType)
     content_object = GenericForeignKey()

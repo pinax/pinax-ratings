@@ -43,13 +43,13 @@ def rate(request, content_type_id, object_id):
     }
 
     # @@@ Seems like this could be much more DRY with a model method or something
-    if rating_input == 0: # clear the rating
+    if rating_input == 0:  # clear the rating
         try:
             rating = Rating.objects.get(
-                object_id = object_id,
-                content_type = ct,
-                user = request.user,
-                category = cat_choice
+                object_id=object_id,
+                content_type=ct,
+                user=request.user,
+                category=cat_choice
             )
             overall = rating.overall_rating
             rating.delete()
@@ -57,20 +57,20 @@ def rate(request, content_type_id, object_id):
             data["overall_rating"] = str(overall.rating)
         except Rating.DoesNotExist:
             pass
-    else: # set the rating
+    else:  # set the rating
         rating, created = Rating.objects.get_or_create(
-            object_id = obj.pk,
-            content_type = ct,
-            user = request.user,
-            category = cat_choice,
-            defaults = {
+            object_id=obj.pk,
+            content_type=ct,
+            user=request.user,
+            category=cat_choice,
+            defaults={
                 "rating": rating_input
             }
         )
         overall, created = OverallRating.objects.get_or_create(
-            object_id = obj.pk,
-            content_type = ct,
-            category = cat_choice
+            object_id=obj.pk,
+            content_type=ct,
+            category=cat_choice
         )
         rating.overall_rating = overall
         rating.rating = rating_input

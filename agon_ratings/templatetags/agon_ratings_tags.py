@@ -19,17 +19,17 @@ def user_rating_value(user, obj, category=None):
         ct = ContentType.objects.get_for_model(obj)
         if category is None:
             rating = Rating.objects.filter(
-                object_id = obj.pk,
-                content_type = ct,
-                user = user
-            ).aggregate(r = models.Avg("rating"))["r"]
+                object_id=obj.pk,
+                content_type=ct,
+                user=user
+            ).aggregate(r=models.Avg("rating"))["r"]
             rating = Decimal(str(rating or "0"))
         else:
             rating = Rating.objects.get(
-                object_id = obj.pk,
-                content_type = ct,
-                user = user,
-                category = category_value(obj, category)
+                object_id=obj.pk,
+                content_type=ct,
+                user=user,
+                category=category_value(obj, category)
             ).rating
     except Rating.DoesNotExist:
         rating = 0
@@ -50,10 +50,10 @@ class UserRatingNode(template.Node):
             raise template.TemplateSyntaxError()
 
         return cls(
-            user = parser.compile_filter(bits[1]),
-            obj = parser.compile_filter(bits[2]),
-            as_var = bits[len(bits) - 1],
-            category = category
+            user=parser.compile_filter(bits[1]),
+            obj=parser.compile_filter(bits[2]),
+            as_var=bits[len(bits) - 1],
+            category=category
         )
 
     def __init__(self, user, obj, as_var, category=None):
@@ -96,9 +96,9 @@ class OverallRatingNode(template.Node):
             raise template.TemplateSyntaxError()
 
         return cls(
-            obj = parser.compile_filter(bits[1]),
-            as_var = bits[len(bits) - 1],
-            category = category
+            obj=parser.compile_filter(bits[1]),
+            as_var=bits[len(bits) - 1],
+            category=category
         )
 
     def __init__(self, obj, as_var, category=None):
@@ -117,15 +117,15 @@ class OverallRatingNode(template.Node):
             ct = ContentType.objects.get_for_model(obj)
             if category is None:
                 rating = OverallRating.objects.filter(
-                    object_id = obj.pk,
-                    content_type = ct
-                ).aggregate(r = models.Avg("rating"))["r"]
+                    object_id=obj.pk,
+                    content_type=ct
+                ).aggregate(r=models.Avg("rating"))["r"]
                 rating = Decimal(str(rating or "0"))
             else:
                 rating = OverallRating.objects.get(
-                    object_id = obj.pk,
-                    content_type = ct,
-                    category = category_value(obj, category)
+                    object_id=obj.pk,
+                    content_type=ct,
+                    category=category_value(obj, category)
                 ).rating or 0
         except OverallRating.DoesNotExist:
             rating = 0
@@ -146,7 +146,7 @@ def rating_post_url(user, obj):
     ct = ContentType.objects.get_for_model(obj)
     post_url = reverse(
         "agon_ratings_rate",
-        kwargs = {
+        kwargs={
             "content_type_id": ct.pk,
             "object_id": obj.pk
         }

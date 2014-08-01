@@ -12,8 +12,8 @@ html_theme = 'default'
 html_static_path = []
 htmlhelp_basename = 'agon_ratingsdoc'
 latex_documents = [
-  ('index', 'agon_ratings.tex', u'agon_ratings Documentation',
-   u'Eldarion', 'manual'),
+    ('index', 'agon_ratings.tex', u'agon_ratings Documentation',
+     u'Eldarion', 'manual'),
 ]
 man_pages = [
     ('index', 'agon_ratings', u'agon_ratings Documentation',
