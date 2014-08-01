@@ -37,31 +37,31 @@ def user_rating_value(user, obj, category=None):
 
 
 class UserRatingNode(template.Node):
-    
+
     @classmethod
     def handle_token(cls, parser, token):
         bits = token.split_contents()
-        
+
         if len(bits) == 5:
             category = None
         elif len(bits) == 6:
             category = parser.compile_filter(bits[3])
         else:
             raise template.TemplateSyntaxError()
-        
+
         return cls(
             user = parser.compile_filter(bits[1]),
             obj = parser.compile_filter(bits[2]),
             as_var = bits[len(bits) - 1],
             category = category
         )
-    
+
     def __init__(self, user, obj, as_var, category=None):
         self.user = user
         self.obj = obj
         self.as_var = as_var
         self.category = category
-    
+
     def render(self, context):
         user = self.user.resolve(context)
         obj = self.obj.resolve(context)
@@ -83,36 +83,36 @@ def user_rating(parser, token):
 
 
 class OverallRatingNode(template.Node):
-    
+
     @classmethod
     def handle_token(cls, parser, token):
         bits = token.split_contents()
-        
+
         if len(bits) == 4:
             category = None
         elif len(bits) == 5:
             category = parser.compile_filter(bits[2])
         else:
             raise template.TemplateSyntaxError()
-        
+
         return cls(
             obj = parser.compile_filter(bits[1]),
             as_var = bits[len(bits) - 1],
             category = category
         )
-    
+
     def __init__(self, obj, as_var, category=None):
         self.obj = obj
         self.as_var = as_var
         self.category = category
-    
+
     def render(self, context):
         obj = self.obj.resolve(context)
         if self.category:
             category = self.category.resolve(context)
         else:
             category = None
-        
+
         try:
             ct = ContentType.objects.get_for_model(obj)
             if category is None:
@@ -158,7 +158,7 @@ def rating_post_url(user, obj):
 def user_rating_js(user, obj, category=None):
     post_url = rating_post_url(user, obj)
     rating = user_rating_value(user, obj, category)
-    
+
     return {
         "obj": obj,
         "post_url": post_url,
@@ -184,4 +184,3 @@ def ratings(obj):
 @register.simple_tag
 def user_rating_url(user, obj):
     return rating_post_url(user, obj)
-

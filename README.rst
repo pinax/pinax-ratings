@@ -23,4 +23,3 @@ Documentation
 -------------
 
 Documentation can be found online at http://agon-ratings.readthedocs.org/.
-

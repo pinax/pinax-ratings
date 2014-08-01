@@ -16,14 +16,14 @@ Then, if you want to display an overall rating average for an object you can set
 a context variable and display it::
 
     {% overall_rating obj as the_overall_rating %}
-    
+
     <div class="overall_rating">{{ the_overall_rating }}</div>
 
 
 Likewise for displaying a user's rating::
 
     {% user_rating request.user obj as the_user_rating %}
-    
+
     <div class="user_rating">{{ the_user_rating }}</div>
 
 
@@ -44,7 +44,7 @@ objects then you do the same as above but just use an optional argument on
 the tags::
 
     {% overall_rating obj "accuracy" as category_rating %}
-    
+
     <div class="overall_rating category-accuracy">
         {{ category_rating }}
     </div>
@@ -52,7 +52,7 @@ the tags::
 and::
 
     {% user_rating request.user obj "accuracy" as category_rating %}
-    
+
     <div class="user_rating category-accuracy">
         {{ category_rating }}
     </div>
@@ -60,5 +60,5 @@ and::
 and::
 
     <div id="user_rating" class="category-accuracy"></div>
-    
+
     {% user_rating_js request.user obj "accuracy" %}

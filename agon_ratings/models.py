@@ -16,21 +16,21 @@ from agon_ratings.managers import OverallRatingManager
 USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', User)
 
 class OverallRating(models.Model):
-    
+
     object_id = models.IntegerField(db_index=True)
     content_type = models.ForeignKey(ContentType)
     content_object = GenericForeignKey()
     rating = models.DecimalField(decimal_places=1, max_digits=6, null=True)
-    
+
     category = models.IntegerField(null=True, choices=RATING_CATEGORY_CHOICES)
-    
+
     objects = OverallRatingManager()
-    
+
     class Meta:
         unique_together = [
             ("object_id", "content_type", "category"),
         ]
-    
+
     def update(self):
         self.rating = Rating.objects.filter(
             overall_rating = self
@@ -47,13 +47,13 @@ class Rating(models.Model):
     user = models.ForeignKey(USER_MODEL)
     rating = models.IntegerField()
     timestamp = models.DateTimeField(default=datetime.datetime.now)
-    
+
     category = models.IntegerField(null=True, choices=RATING_CATEGORY_CHOICES)
-    
+
     class Meta:
         unique_together = [
             ("object_id", "content_type", "user", "category"),
         ]
-    
+
     def __unicode__(self):
         return unicode(self.rating)
