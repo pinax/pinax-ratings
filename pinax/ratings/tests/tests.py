@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.test import TestCase
 
 from django.contrib.auth.models import User
@@ -18,6 +20,6 @@ class Tests(TestCase):
 
     def test_rating(self):
         overall = Rating.update(self.bronco, self.paltman, rating=5)
-        self.assertEquals(overall, 5)
+        self.assertEquals(overall, Decimal("5"))
         overall = Rating.update(self.bronco, self.jtauber, rating=2)
-        self.assertEquals(overall, 3.5)
+        self.assertEquals(overall, Decimal("3.5"))
