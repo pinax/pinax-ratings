@@ -1,14 +1,14 @@
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import JsonResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
-from django.utils import simplejson as json
 from django.views.decorators.http import require_POST
 
-from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 
+from account.decorators import login_required
+
 from .categories import category_value
-from .models import Rating, OverallRating
+from .models import Rating
 
 
 NUM_OF_RATINGS = getattr(settings, "PINAX_RATINGS_NUM_OF_RATINGS", 5)
@@ -21,10 +21,7 @@ def rate(request, content_type_id, object_id):
     obj = get_object_or_404(ct.model_class(), pk=object_id)
     rating_input = int(request.POST.get("rating"))
     category = request.POST.get("category")
-    if category:
-        cat_choice = category_value(obj, category)
-    else:
-        cat_choice = None
+    cat_choice = category_value(obj, category)
 
     # Check for errors and bail early
     if category is not None and cat_choice is None:
@@ -42,40 +39,11 @@ def rate(request, content_type_id, object_id):
         "category": category
     }
 
-    # @@@ Seems like this could be much more DRY with a model method or something
-    if rating_input == 0:  # clear the rating
-        try:
-            rating = Rating.objects.get(
-                object_id=object_id,
-                content_type=ct,
-                user=request.user,
-                category=cat_choice
-            )
-            overall = rating.overall_rating
-            rating.delete()
-            overall.update()
-            data["overall_rating"] = str(overall.rating)
-        except Rating.DoesNotExist:
-            pass
-    else:  # set the rating
-        rating, created = Rating.objects.get_or_create(
-            object_id=obj.pk,
-            content_type=ct,
-            user=request.user,
-            category=cat_choice,
-            defaults={
-                "rating": rating_input
-            }
-        )
-        overall, created = OverallRating.objects.get_or_create(
-            object_id=obj.pk,
-            content_type=ct,
-            category=cat_choice
-        )
-        rating.overall_rating = overall
-        rating.rating = rating_input
-        rating.save()
-        overall.update()
-        data["overall_rating"] = str(overall.rating)
+    data["overall_rating"] = Rating.update(
+        rating_object=obj,
+        user=request.user,
+        category=cat_choice,
+        rating=rating_input
+    )
 
-    return HttpResponse(json.dumps(data), mimetype="application/json")
+    return JsonResponse(data)
