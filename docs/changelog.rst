@@ -3,6 +3,12 @@
 ChangeLog
 =========
 
+0.3.0
+-----
+
+- renamed from agon_ratings to pinax-ratings
+
+
 0.2.1
 -----
 

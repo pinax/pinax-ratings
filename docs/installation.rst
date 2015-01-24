@@ -3,31 +3,31 @@
 Installation
 ============
 
-* To install agon_ratings::
+* To install pinax-ratings::
 
-    pip install agon_ratings
+    pip install pinax-ratings
 
-* Add ``agon_ratings`` to your ``INSTALLED_APPS`` setting::
+* Add ``pinax-ratings`` to your ``INSTALLED_APPS`` setting::
 
     INSTALLED_APPS = (
         # other apps
-        "agon_ratings",
+        "pinax.ratings",
     )
 
-* See the list of :ref:`settings` to modify agon_ratings's
+* See the list of :ref:`settings` to modify pinax-ratings's
   default behavior and make adjustments for your website.
 
-* Lastly you will want to add `agon_ratings.urls` to your urls definition::
+* Lastly you will want to add `pinax-ratings.urls` to your urls definition::
 
     ...
-    url(r"^ratings/", include("agon_ratings.urls")),
+    url(r"^ratings/", include("pinax.ratings.urls")),
     ...
 
-* Optionally, if want to use the ratings category feature of `agon-ratings`
-  then you will need to add the `AGON_RATINGS_CATEGORY_CHOICES` setting
+* Optionally, if want to use the ratings category feature of `pinax-ratings`
+  then you will need to add the `pinax-RATINGS_CATEGORY_CHOICES` setting
   in your `settings.py`::
 
-    AGON_RATINGS_CATEGORY_CHOICES = {
+    PINAX_RATINGS_CATEGORY_CHOICES = {
         "app.Model": {
             "exposure": "How good is the exposure?",
             "framing": "How well was the photo framed?",

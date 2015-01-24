@@ -7,8 +7,8 @@ from django.core.urlresolvers import reverse
 
 from django.contrib.contenttypes.models import ContentType
 
-from agon_ratings.categories import category_value
-from agon_ratings.models import Rating, OverallRating
+from ..categories import category_value
+from ..models import Rating, OverallRating
 
 
 register = template.Library()
@@ -145,7 +145,7 @@ def overall_rating(parser, token):
 def rating_post_url(user, obj):
     ct = ContentType.objects.get_for_model(obj)
     post_url = reverse(
-        "agon_ratings_rate",
+        "pinax_ratings_rate",
         kwargs={
             "content_type_id": ct.pk,
             "object_id": obj.pk
@@ -154,7 +154,7 @@ def rating_post_url(user, obj):
     return post_url
 
 
-@register.inclusion_tag("agon_ratings/_script.html")
+@register.inclusion_tag("pinax/ratings/_script.html")
 def user_rating_js(user, obj, category=None):
     post_url = rating_post_url(user, obj)
     rating = user_rating_value(user, obj, category)

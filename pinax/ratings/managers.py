@@ -2,7 +2,7 @@ from django.db import models
 
 from django.contrib.contenttypes.models import ContentType
 
-from agon_ratings.categories import category_value
+from .categories import category_value
 
 
 class OverallRatingManager(models.Manager):

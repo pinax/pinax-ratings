@@ -1,21 +1,33 @@
+from __future__ import unicode_literals
+
+import pkg_resources
+
+
 extensions = []
 templates_path = []
-source_suffix = '.rst'
-master_doc = 'index'
-project = u'agon_ratings'
-copyright = u'2011, Eldarion'
-version = '0.2'
-release = '0.2'
-exclude_patterns = ['_build']
-pygments_style = 'sphinx'
-html_theme = 'default'
-html_static_path = []
-htmlhelp_basename = 'agon_ratingsdoc'
-latex_documents = [
-    ('index', 'agon_ratings.tex', u'agon_ratings Documentation',
-     u'Eldarion', 'manual'),
-]
-man_pages = [
-    ('index', 'agon_ratings', u'agon_ratings Documentation',
-     [u'Eldarion'], 1)
-]
+source_suffix = ".rst"
+master_doc = "index"
+project = "pinax-ratings"
+copyright_holder = "James Tauber and contributors"
+copyright = "2015, {0}".format(copyright_holder)
+exclude_patterns = ["_build"]
+pygments_style = "sphinx"
+html_theme = "default"
+htmlhelp_basename = "{0}doc".format(project)
+latex_documents = [(
+    "index",
+    "{0}.tex".format(project),
+    "{0} Documentation".format(project),
+    "Pinax",
+    "manual"
+),]
+man_pages = [(
+    "index",
+    project,
+    "{0} Documentation".format(project),
+    ["Pinax"],
+    1
+),]
+
+version = pkg_resources.get_distribution("pinax-ratings").version
+release = version

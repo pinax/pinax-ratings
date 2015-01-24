@@ -3,7 +3,7 @@
 Templates
 =========
 
-`agon_ratings` comes with one template that is a minimal snippet that gets rendered
+`pinax-ratings` comes with one template that is a minimal snippet that gets rendered
 from the template tags for displaying the rating form.
 
 

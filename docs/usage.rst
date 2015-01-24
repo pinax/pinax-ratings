@@ -3,13 +3,13 @@
 Usage
 =====
 
-Integrating `agon_ratings` into your project is just a matter of using a couple of
+Integrating `pinax-ratings` into your project is just a matter of using a couple of
 template tags and wiring up a bit of javascript. The rating form is intended
 to function via AJAX and as such returns JSON.
 
-Firstly, add load the template tags for `agon_ratings`::
+Firstly, add load the template tags for `pinax-ratings`::
 
-    {% load agon_ratings_tags %}
+    {% load pinax_ratings_tags %}
 
 
 Then, if you want to display an overall rating average for an object you can set

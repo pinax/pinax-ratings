@@ -3,15 +3,14 @@ import datetime
 from decimal import Decimal
 
 from django.db import models
-
 from django.conf import settings
 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
-from agon_ratings.categories import RATING_CATEGORY_CHOICES
-from agon_ratings.managers import OverallRatingManager
+from .categories import RATING_CATEGORY_CHOICES
+from .managers import OverallRatingManager
 
 USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', User)
 

@@ -7,11 +7,11 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 
-from agon_ratings.categories import category_value
-from agon_ratings.models import Rating, OverallRating
+from .categories import category_value
+from .models import Rating, OverallRating
 
 
-NUM_OF_RATINGS = getattr(settings, "AGON_NUM_OF_RATINGS", 5)
+NUM_OF_RATINGS = getattr(settings, "PINAX_RATINGS_NUM_OF_RATINGS", 5)
 
 
 @require_POST
