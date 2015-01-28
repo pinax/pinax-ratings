@@ -16,7 +16,7 @@ setup(
     description="a ratings app for Django",
     name="pinax-ratings",
     long_description=read("README.rst"),
-    version="0.3",
+    version="0.3.1",
     url="http://pinax-ratings.rtfd.org/",
     license="MIT",
     packages=find_packages(),
