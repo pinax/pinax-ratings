@@ -10,20 +10,23 @@ def read(*parts):
         return fp.read()
 
 
+print find_packages()
+
 setup(
     author="Pinax Team",
     author_email="team@pinaxproject.com",
     description="a ratings app for Django",
     name="pinax-ratings",
     long_description=read("README.rst"),
-    version="0.3.2",
+    version="0.3.3",
     url="http://pinax-ratings.rtfd.org/",
     license="MIT",
     packages=find_packages(),
     package_data={
         "pinax.ratings": [
-            "pinax/ratings/static/*",
-            "pinax/ratings/templates/*"
+            "static/pinax/ratings/img/*",
+            "static/pinax/ratings/js/*",
+            "templates/pinax/ratings/*"
         ]
     },
     test_suite="runtests.runtests",
