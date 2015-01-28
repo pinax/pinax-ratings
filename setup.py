@@ -16,12 +16,15 @@ setup(
     description="a ratings app for Django",
     name="pinax-ratings",
     long_description=read("README.rst"),
-    version="0.3.1",
+    version="0.3.2",
     url="http://pinax-ratings.rtfd.org/",
     license="MIT",
     packages=find_packages(),
     package_data={
-        "ratings": []
+        "pinax.ratings": [
+            "pinax/ratings/static/*",
+            "pinax/ratings/templates/*"
+        ]
     },
     test_suite="runtests.runtests",
     tests_require=[
