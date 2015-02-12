@@ -1,6 +1,10 @@
 pinax-ratings
 ========================
 
+.. image:: https://badges.gitter.im/Join%20Chat.svg
+   :alt: Join the chat at https://gitter.im/pinax/pinax-ratings
+   :target: https://gitter.im/pinax/pinax-ratings?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
 .. image:: https://img.shields.io/travis/<user_or_org_name>/pinax-ratings.svg
     :target: https://travis-ci.org/<user_or_org_name>/pinax-ratings
 
