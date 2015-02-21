@@ -5,10 +5,10 @@ pinax-ratings
    :alt: Join the chat at https://gitter.im/pinax/pinax-ratings
    :target: https://gitter.im/pinax/pinax-ratings?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
-.. image:: https://img.shields.io/travis/<user_or_org_name>/pinax-ratings.svg
+.. image:: https://img.shields.io/travis/pinax/pinax-ratings.svg
     :target: https://travis-ci.org/<user_or_org_name>/pinax-ratings
 
-.. image:: https://img.shields.io/coveralls/<user_or_org_name>/pinax-ratings.svg
+.. image:: https://img.shields.io/coveralls/pinax/pinax-ratings.svg
     :target: https://coveralls.io/r/<user_or_org_name>/pinax-ratings
 
 .. image:: https://img.shields.io/pypi/dm/pinax-ratings.svg
