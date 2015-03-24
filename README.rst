@@ -17,7 +17,7 @@ pinax-ratings
 .. image:: https://img.shields.io/pypi/v/pinax-ratings.svg
     :target:  https://pypi.python.org/pypi/pinax-ratings/
 
-.. image:: https://img.shields.io/badge/license-<license>-blue.svg
+.. image:: https://img.shields.io/badge/license-MIT-blue.svg
     :target:  https://pypi.python.org/pypi/pinax-ratings/
 
 
