@@ -8,9 +8,9 @@ from django.utils.encoding import python_2_unicode_compatible
 
 from django.contrib.auth.models import User
 try:
-    from django.contrib.contenttypes.generic import GenericForeignKey
-except:
     from django.contrib.contenttypes.fields import GenericForeignKey
+except:
+    from django.contrib.contenttypes.generic import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
 from .categories import RATING_CATEGORY_CHOICES
