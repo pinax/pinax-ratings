@@ -33,7 +33,7 @@ setup(
     tests_require=[
     ],
     install_requires=[
-        "django-user-accounts>=1.1
+        "django-user-accounts>=1.1",
     ],
     classifiers=[
         "Development Status :: 4 - Beta",
