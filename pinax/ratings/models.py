@@ -72,7 +72,7 @@ class Rating(models.Model):
             rating_obj = None
 
         if rating_obj and rating == 0:
-            return rating.clear()
+            return rating_obj.clear()
 
         if rating_obj is None:
             rating_obj = cls.objects.create(
