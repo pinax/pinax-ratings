@@ -184,3 +184,18 @@ def ratings(obj):
 @register.simple_tag
 def user_rating_url(user, obj):
     return rating_post_url(user, obj)
+
+
+@register.simple_tag
+def rating_count(obj):
+    """
+    Total amount of users who have submitted a rating for this object.
+
+    Usage:
+        {% rating_count obj %}
+    """
+    count = Rating.objects.filter(
+        object_id=obj.pk,
+        content_type=ContentType.objects.get_for_model(obj),
+    ).count()
+    return count
