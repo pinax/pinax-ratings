@@ -47,7 +47,7 @@ Running the Tests
 Documentation
 --------------
 
-The Pinax documentation is available at http://pinaxproject.com/pinax/.
+The pinax-ratings documentation is available at https://agon-ratings.readthedocs.org/en/latest/. The Pinax documentation is available at http://pinaxproject.com/pinax/.
 
 
 Code of Conduct
