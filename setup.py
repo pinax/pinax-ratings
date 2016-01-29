@@ -9,9 +9,6 @@ def read(*parts):
     with codecs.open(filename, encoding="utf-8") as fp:
         return fp.read()
 
-
-print find_packages()
-
 setup(
     author="Pinax Team",
     author_email="team@pinaxproject.com",
