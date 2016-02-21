@@ -1,49 +1,47 @@
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.http import JsonResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
-from django.views.decorators.http import require_POST
-
-from django.contrib.contenttypes.models import ContentType
-
-from account.decorators import login_required
+from django.views.generic import View
 
 from .categories import category_value
 from .models import Rating
 
+try:
+    from account.mixins import LoginRequiredMixin
+except ImportError:
+    from django.contrib.auth.mixins import LoginRequiredMixin
 
 NUM_OF_RATINGS = getattr(settings, "PINAX_RATINGS_NUM_OF_RATINGS", 5)
 
 
-@require_POST
-@login_required
-def rate(request, content_type_id, object_id):
-    ct = get_object_or_404(ContentType, pk=content_type_id)
-    obj = get_object_or_404(ct.model_class(), pk=object_id)
-    rating_input = int(request.POST.get("rating"))
-    category = request.POST.get("category")
-    cat_choice = category_value(obj, category)
+class RateView(LoginRequiredMixin, View):
 
-    # Check for errors and bail early
-    if category is not None and cat_choice is None:
-        return HttpResponseForbidden(
-            "Invalid category. It must match a preconfigured setting"
-        )
-    if rating_input not in range(NUM_OF_RATINGS + 1):
-        return HttpResponseForbidden(
-            "Invalid rating. It must be a value between 0 and %s" % NUM_OF_RATINGS
-        )
+    def post(self, request, *args, **kwargs):
+        ct = get_object_or_404(ContentType, pk=self.kwargs.get("content_type_id"))
+        obj = get_object_or_404(ct.model_class(), pk=self.kwargs.get("object_id"))
+        rating_input = int(request.POST.get("rating"))
+        category = request.POST.get("category")
+        cat_choice = category_value(obj, category)
 
-    data = {
-        "user_rating": rating_input,
-        "overall_rating": 0,
-        "category": category
-    }
+        # Check for errors and bail early
+        if category is not None and cat_choice is None:
+            return HttpResponseForbidden(
+                "Invalid category. It must match a preconfigured setting"
+            )
+        if rating_input not in range(NUM_OF_RATINGS + 1):
+            return HttpResponseForbidden(
+                "Invalid rating. It must be a value between 0 and %s" % NUM_OF_RATINGS
+            )
 
-    data["overall_rating"] = Rating.update(
-        rating_object=obj,
-        user=request.user,
-        category=cat_choice,
-        rating=rating_input
-    )
-
-    return JsonResponse(data)
+        data = {
+            "user_rating": rating_input,
+            "category": category,
+            "overall_rating": Rating.update(
+                rating_object=obj,
+                user=request.user,
+                category=cat_choice,
+                rating=rating_input
+            )
+        }
+        return JsonResponse(data)
