@@ -16,7 +16,7 @@ setup(
     name="pinax-ratings",
     long_description=read("README.rst"),
     version="0.3.3",
-    url="http://pinax-ratings.rtfd.org/",
+    url="http://github.com/pinax/pinax-ratings/",
     license="MIT",
     packages=find_packages(),
     package_data={
@@ -41,7 +41,7 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 2",
-        # "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     zip_safe=False
