@@ -6,7 +6,6 @@ from django.db.models import Avg
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 
-from django.contrib.auth.models import User
 try:
     from django.contrib.contenttypes.fields import GenericForeignKey
 except:
@@ -15,8 +14,6 @@ from django.contrib.contenttypes.models import ContentType
 
 from .categories import RATING_CATEGORY_CHOICES
 from .managers import OverallRatingManager
-
-USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', User)
 
 
 class OverallRating(models.Model):
@@ -46,7 +43,7 @@ class Rating(models.Model):
     object_id = models.IntegerField(db_index=True)
     content_type = models.ForeignKey(ContentType)
     content_object = GenericForeignKey()
-    user = models.ForeignKey(USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     rating = models.IntegerField()
     timestamp = models.DateTimeField(default=timezone.now)
     category = models.IntegerField(null=True, choices=RATING_CATEGORY_CHOICES)
