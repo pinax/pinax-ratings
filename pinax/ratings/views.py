@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.http import JsonResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.views.generic import View
 
 from .categories import category_value
@@ -44,4 +45,12 @@ class RateView(LoginRequiredMixin, View):
                 rating=rating_input
             )
         }
+        # add support for eldarion-ajax
+        data.update({
+            "content_type_id": self.kwargs.get("content_type_id"),
+            "object_id": self.kwargs.get("object_id")
+        })
+        data.update({
+            "html": render_to_string("pinax/ratings/_rating.html", data, request)
+        })
         return JsonResponse(data)

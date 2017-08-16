@@ -15,7 +15,7 @@ setup(
     description="a ratings app for Django",
     name="pinax-ratings",
     long_description=read("README.rst"),
-    version="0.3.3",
+    version="1.0.0",
     url="http://github.com/pinax/pinax-ratings/",
     license="MIT",
     packages=find_packages(),
@@ -30,7 +30,8 @@ setup(
     tests_require=[
     ],
     install_requires=[
-        "django-user-accounts>=1.1",
+        "django-user-accounts>=2.0.3",
+        "Django>=1.8"
     ],
     classifiers=[
         "Development Status :: 4 - Beta",

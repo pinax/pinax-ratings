@@ -58,15 +58,12 @@ class Rating(models.Model):
     def update(cls, rating_object, user, rating, category=None):
         # @@@ Still doing too much in this method
         ct = ContentType.objects.get_for_model(rating_object)
-        try:
-            rating_obj = cls.objects.get(
-                object_id=rating_object.pk,
-                content_type=ct,
-                user=user,
-                category=category
-            )
-        except cls.DoesNotExist:
-            rating_obj = None
+        rating_obj = cls.objects.filter(
+            object_id=rating_object.pk,
+            content_type=ct,
+            user=user,
+            category=category
+        ).first()
 
         if rating_obj and rating == 0:
             return rating_obj.clear()
