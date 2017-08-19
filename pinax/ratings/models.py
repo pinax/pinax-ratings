@@ -22,7 +22,7 @@ class OverallRating(models.Model):
     content_type = models.ForeignKey(ContentType)
     content_object = GenericForeignKey()
     rating = models.DecimalField(decimal_places=1, max_digits=6, null=True)
-    category = models.IntegerField(null=True, choices=RATING_CATEGORY_CHOICES)
+    category = models.CharField(max_length=250, blank=True, choices=RATING_CATEGORY_CHOICES)
 
     objects = OverallRatingManager()
 
@@ -46,7 +46,7 @@ class Rating(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     rating = models.IntegerField()
     timestamp = models.DateTimeField(default=timezone.now)
-    category = models.IntegerField(null=True, choices=RATING_CATEGORY_CHOICES)
+    category = models.CharField(max_length=250, blank=True, choices=RATING_CATEGORY_CHOICES)
 
     def clear(self):
         overall = self.overall_rating
@@ -55,7 +55,7 @@ class Rating(models.Model):
         return overall.rating
 
     @classmethod
-    def update(cls, rating_object, user, rating, category=None):
+    def update(cls, rating_object, user, rating, category=""):
         # @@@ Still doing too much in this method
         ct = ContentType.objects.get_for_model(rating_object)
         rating_obj = cls.objects.filter(

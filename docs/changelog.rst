@@ -3,6 +3,18 @@
 ChangeLog
 =========
 
+2.0.0
+-----
+
+- converted category on ratings.Rating and `ratings.OverallRating` models to be
+  a CharField that is the actual category label rather than a runtime generated
+  ID. _upgrading will require you manually update the database values_
+
+1.0.0
+-----
+
+- @@@ write change log
+
 0.3
 ---
 

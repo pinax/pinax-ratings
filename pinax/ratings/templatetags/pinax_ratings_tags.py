@@ -14,30 +14,30 @@ from ..models import Rating, OverallRating
 register = template.Library()
 
 
-def user_rating_value(user, obj, category=None):
+def user_rating_value(user, obj, category=""):
     try:
         ct = ContentType.objects.get_for_model(obj)
-        if category is None:
-            rating = Rating.objects.filter(
-                object_id=obj.pk,
-                content_type=ct,
-                user=user
-            ).aggregate(r=models.Avg("rating"))["r"]
-            rating = Decimal(str(rating or "0"))
-        else:
+        if category:
             rating = Rating.objects.get(
                 object_id=obj.pk,
                 content_type=ct,
                 user=user,
                 category=category_value(obj, category)
             ).rating
+        else:
+            rating = Rating.objects.filter(
+                object_id=obj.pk,
+                content_type=ct,
+                user=user
+            ).aggregate(r=models.Avg("rating"))["r"]
+            rating = Decimal(str(rating or "0"))
     except Rating.DoesNotExist:
         rating = 0
     return rating
 
 
 @register.simple_tag
-def user_rating(user, object, category=None):
+def user_rating(user, object, category=""):
     """
     Usage:
         {% user_rating user obj [category] as var %}
@@ -46,25 +46,25 @@ def user_rating(user, object, category=None):
 
 
 @register.simple_tag
-def overall_rating(object, category=None):
+def overall_rating(object, category=""):
     """
     Usage:
         {% overall_rating obj [category] as var %}
     """
     try:
         ct = ContentType.objects.get_for_model(object)
-        if category is None:
-            rating = OverallRating.objects.filter(
-                object_id=object.pk,
-                content_type=ct
-            ).aggregate(r=models.Avg("rating"))["r"]
-            rating = Decimal(str(rating or "0"))
-        else:
+        if category:
             rating = OverallRating.objects.get(
                 object_id=object.pk,
                 content_type=ct,
                 category=category_value(object, category)
             ).rating or 0
+        else:
+            rating = OverallRating.objects.filter(
+                object_id=object.pk,
+                content_type=ct
+            ).aggregate(r=models.Avg("rating"))["r"]
+            rating = Decimal(str(rating or "0"))
     except OverallRating.DoesNotExist:
         rating = 0
     return rating
@@ -83,7 +83,7 @@ def rating_post_url(user, obj):
 
 
 @register.inclusion_tag("pinax/ratings/_script.html")
-def user_rating_js(user, obj, category=None):
+def user_rating_js(user, obj, category=""):
     post_url = rating_post_url(user, obj)
     rating = user_rating_value(user, obj, category)
 
@@ -103,7 +103,7 @@ def ratings(obj):
         return OverallRating.objects.get(
             content_type=ct,
             object_id=obj.pk,
-            category=None
+            category=""
         ).ratings.all()
     except OverallRating.DoesNotExist:
         return []

@@ -22,11 +22,11 @@ class RateView(LoginRequiredMixin, View):
         ct = get_object_or_404(ContentType, pk=self.kwargs.get("content_type_id"))
         obj = get_object_or_404(ct.model_class(), pk=self.kwargs.get("object_id"))
         rating_input = int(request.POST.get("rating"))
-        category = request.POST.get("category")
+        category = request.POST.get("category", "")
         cat_choice = category_value(obj, category)
 
         # Check for errors and bail early
-        if category is not None and cat_choice is None:
+        if category and cat_choice is None:
             return HttpResponseForbidden(
                 "Invalid category. It must match a preconfigured setting"
             )

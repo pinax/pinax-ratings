@@ -39,7 +39,7 @@ def run(*args):
 
     django.core.management.call_command(
         "makemigrations",
-        "pinax_ratings",
+        "ratings",
         *args
     )
 

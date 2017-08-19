@@ -7,7 +7,7 @@ from .categories import category_value
 
 class OverallRatingManager(models.Manager):
 
-    def top_rated(self, klass, category=None):
+    def top_rated(self, klass, category=""):
         cat = category_value(klass, category)
         return self.filter(
             content_type=ContentType.objects.get_for_model(klass),
