@@ -51,7 +51,7 @@ setup(
     author="Pinax Team",
     author_email="team@pinaxprojects.com",
     description="a ratings app for Django",
-    name="pinax-app",
+    name="pinax-ratings",
     long_description=LONG_DESCRIPTION,
     version="3.0.0",
     url="http://github.com/pinax/pinax-ratings/",
