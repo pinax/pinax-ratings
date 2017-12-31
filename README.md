@@ -212,31 +212,31 @@ hooking up of a rating UI. This is optional and overridable by the site develope
 
 ### 2.0.0
 
-- converted category on ratings.Rating and `ratings.OverallRating` models to be
+* converted category on ratings.Rating and `ratings.OverallRating` models to be
   a CharField that is the actual category label rather than a runtime generated
   ID. _upgrading will require you manually update the database values_
 
 ### 1.0.0
 
-- @@@ write change log
+* @@@ write change log
 
 ### 0.3
 
-- renamed from agon_ratings to pinax-ratings
+* renamed from agon_ratings to pinax-ratings
 
 ### 0.2.1
 
-- added ability in overall_rating template tag to omit the category
+* added ability in overall_rating template tag to omit the category
   label and get an average rating without concern for category
   averages.
-- added ability to get average rating over all categories for a
+* added ability to get average rating over all categories for a
   particular user and particular object.
 
 ### 0.2
 
-- added support for ratings to have categories instead of just a single
+* added support for ratings to have categories instead of just a single
   rating for an object
-- dropped natural language of template tags
+* dropped natural language of template tags
 
 Migrations
 ^^^^^^^^^^
@@ -256,14 +256,14 @@ Added a category model and updated the unique index on both models::
 
 ### 0.1.2
 
-- added a tag, `user_rating_url`, for getting the POST url for posting a rating
-- changed `user_rate_form` and documented javascript wiring to a single
+* added a tag, `user_rating_url`, for getting the POST url for posting a rating
+* changed `user_rate_form` and documented javascript wiring to a single
   `user_rating_js` inclusion tag that output all the javascript and removed
   the need for a form.
 
 ### 0.1
 
-- initial release
+* initial release
 
 
 ## Contribute
