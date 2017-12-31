@@ -63,13 +63,11 @@ Add ``pinax-ratings`` to your ``INSTALLED_APPS`` setting:
         "pinax.ratings",
     )
 
-See the list of :ref:`settings` to modify pinax-ratings's default behavior and make adjustments for your website.
+See the list of [`settings`](#settings) to modify pinax-ratings's default behavior and make adjustments for your website.
 
 Lastly you will want to add `pinax-ratings.urls` to your urls definition:
 
-    ...
     url(r"^ratings/", include("pinax.ratings.urls")),
-    ...
 
 Optionally, if want to use the ratings category feature of `pinax-ratings` then you will need to add the `pinax-RATINGS_CATEGORY_CHOICES` setting in your `settings.py`:
 
@@ -85,7 +83,6 @@ Optionally, if want to use the ratings category feature of `pinax-ratings` then 
             "compelling": "Is the article compelling?"
         }
     }
-    
         
 ### Usage
 
@@ -93,7 +90,7 @@ Integrating `pinax-ratings` into your project is just a matter of using a couple
 template tags and wiring up a bit of javascript. The rating form is intended
 to function via AJAX and as such returns JSON.
 
-Firstly, add load the template tags for `pinax-ratings`
+Firstly, add load the template tags for `pinax-ratings`:
 
     {% load pinax_ratings_tags %}
 
@@ -169,7 +166,7 @@ object.
 
 It should follow the format of a dictionary of dictionaries. For example, think of
 the context of a website that allowed ratings of photographs and articles
-published by other users::
+published by other users:
 
     PINAX_RATINGS_CATEGORY_CHOICES = {
         "app.Model": {
@@ -233,10 +230,9 @@ hooking up of a rating UI. This is optional and overridable by the site develope
   rating for an object
 * dropped natural language of template tags
 
-Migrations
-^^^^^^^^^^
+#### Migrations
 
-Added a category model and updated the unique index on both models::
+Added a category model and updated the unique index on both models:
 
     ALTER TABLE "agon_ratings_overallrating" ADD COLUMN "category" int;
     ALTER TABLE "agon_ratings_rating" ADD COLUMN "category" int;
