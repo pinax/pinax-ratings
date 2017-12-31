@@ -52,29 +52,26 @@ Django \ Python | 2.7 | 3.4 | 3.5 | 3.6
 
 ### Installation
 
-* To install pinax-ratings::
+To install pinax-ratings:
 
     pip install pinax-ratings
 
-* Add ``pinax-ratings`` to your ``INSTALLED_APPS`` setting::
+Add ``pinax-ratings`` to your ``INSTALLED_APPS`` setting:
 
     INSTALLED_APPS = (
         # other apps
         "pinax.ratings",
     )
 
-* See the list of :ref:`settings` to modify pinax-ratings's
-  default behavior and make adjustments for your website.
+See the list of :ref:`settings` to modify pinax-ratings's default behavior and make adjustments for your website.
 
-* Lastly you will want to add `pinax-ratings.urls` to your urls definition::
+Lastly you will want to add `pinax-ratings.urls` to your urls definition:
 
     ...
     url(r"^ratings/", include("pinax.ratings.urls")),
     ...
 
-* Optionally, if want to use the ratings category feature of `pinax-ratings`
-  then you will need to add the `pinax-RATINGS_CATEGORY_CHOICES` setting
-  in your `settings.py`::
+Optionally, if want to use the ratings category feature of `pinax-ratings` then you will need to add the `pinax-RATINGS_CATEGORY_CHOICES` setting in your `settings.py`:
 
     PINAX_RATINGS_CATEGORY_CHOICES = {
         "app.Model": {
@@ -89,26 +86,27 @@ Django \ Python | 2.7 | 3.4 | 3.5 | 3.6
         }
     }
     
+        
 ### Usage
 
 Integrating `pinax-ratings` into your project is just a matter of using a couple of
 template tags and wiring up a bit of javascript. The rating form is intended
 to function via AJAX and as such returns JSON.
 
-Firstly, add load the template tags for `pinax-ratings`::
+Firstly, add load the template tags for `pinax-ratings`
 
     {% load pinax_ratings_tags %}
 
 
 Then, if you want to display an overall rating average for an object you can set
-a context variable and display it::
+a context variable and display it:
 
     {% overall_rating obj as the_overall_rating %}
 
     <div class="overall_rating">{{ the_overall_rating }}</div>
 
 
-Likewise for displaying a user's rating::
+Likewise for displaying a user's rating:
 
     {% user_rating request.user obj as the_user_rating %}
 
@@ -116,20 +114,20 @@ Likewise for displaying a user's rating::
 
 
 If you want to add an AJAX form for allowing a user to set a rating, add the
-following in the appropriate location on your page::
+following in the appropriate location on your page:
 
     <div id="user_rating"></div>
 
 
 And then add this near the end of your HTML `<body>` to emit some Javascript
-libraries and hook up the ratings UI::
+libraries and hook up the ratings UI:
 
     {% user_rating_js request.user obj %}
 
 
 If you want to do any rating based on categories of ratings for an object or
 objects then you do the same as above but just use an optional argument on
-the tags::
+the tags:
 
     {% overall_rating obj "accuracy" as category_rating %}
 
@@ -137,7 +135,7 @@ the tags::
         {{ category_rating }}
     </div>
 
-and::
+and
 
     {% user_rating request.user obj "accuracy" as category_rating %}
 
@@ -145,7 +143,7 @@ and::
         {{ category_rating }}
     </div>
 
-and::
+and
 
     <div id="user_rating" class="category-accuracy"></div>
 
@@ -153,19 +151,17 @@ and::
     
 ### Settings
 
-.. _pinax_ratings_num_of_ratings:
+_pinax_ratings_num_of_ratings:
 
 PINAX_RATINGS_NUM_OF_RATINGS
-^^^^^^^^^^^^^^^^^^^
 
-:Default: 5
+Default: 5
 
 Defines the number of different rating choices there will be.
 
 PINAX_RATINGS_CATEGORY_CHOICES
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-:Default: `None`
+Default: `None`
 
 Defines a dictionary of choices for different models for the application of
 ratings along different dimensions rather than just a single rating for an
