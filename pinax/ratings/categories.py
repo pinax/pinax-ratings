@@ -1,6 +1,5 @@
 from django.conf import settings
 
-
 RATING_CATEGORY_CHOICES_DICT = getattr(settings, "PINAX_RATINGS_CATEGORY_CHOICES", {})
 RATING_CATEGORY_CHOICES = []
 RATING_CATEGORY_LOOKUP = {}
