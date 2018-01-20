@@ -230,6 +230,7 @@ hooking up of a rating UI. This is optional and overridable by the site develope
 
 * Add Django 2.0 compatibility testing
 * Drop Django 1.8, 1.9, 1.10, and Python 3.3 support
+* Add URL namespacing (BI: urlname "pinax_ratings_rate" is now "pinax_ratings:rate")
 * Move documentation into README and standardize layout
 * Convert CI and coverage to CircleCi and CodeCov
 * Add PyPi-compatible long description
