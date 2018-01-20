@@ -1,6 +1,5 @@
-from django.db import models
-
 from django.contrib.contenttypes.models import ContentType
+from django.db import models
 
 from .categories import category_value
 
