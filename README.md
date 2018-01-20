@@ -54,23 +54,33 @@ Django \ Python | 2.7 | 3.4 | 3.5 | 3.6
 
 To install pinax-ratings:
 
-    pip install pinax-ratings
+```shell
+    $ pip install pinax-ratings
+``
 
 Add ``pinax-ratings`` to your ``INSTALLED_APPS`` setting:
 
-    INSTALLED_APPS = (
+```python
+    INSTALLED_APPS = [
         # other apps
         "pinax.ratings",
-    )
+    ]
+```
 
-See the list of [`settings`](#settings) to modify pinax-ratings's default behavior and make adjustments for your website.
+Next add `pinax.ratings.urls` to your urls definition:
 
-Lastly you will want to add `pinax-ratings.urls` to your urls definition:
+```python
+    urlpatterns = [
+        # other urls
+        url(r"^ratings/", include("pinax.ratings.urls", namespace="pinax_ratings")),
+    ]
+```
 
-    url(r"^ratings/", include("pinax.ratings.urls")),
+Finally, view the list of [settings](#settings) to modify pinax-ratings's default behavior and make adjustments for your website.
 
 Optionally, if want to use the ratings category feature of `pinax-ratings` then you will need to add the `pinax-RATINGS_CATEGORY_CHOICES` setting in your `settings.py`:
 
+```python
     PINAX_RATINGS_CATEGORY_CHOICES = {
         "app.Model": {
             "exposure": "How good is the exposure?",
@@ -83,7 +93,9 @@ Optionally, if want to use the ratings category feature of `pinax-ratings` then 
             "compelling": "Is the article compelling?"
         }
     }
-        
+```
+
+
 ### Usage
 
 Integrating `pinax-ratings` into your project is just a matter of using a couple of
@@ -92,71 +104,85 @@ to function via AJAX and as such returns JSON.
 
 Firstly, add load the template tags for `pinax-ratings`:
 
+```django
     {% load pinax_ratings_tags %}
-
+```
 
 Then, if you want to display an overall rating average for an object you can set
 a context variable and display it:
 
+```django
     {% overall_rating obj as the_overall_rating %}
 
     <div class="overall_rating">{{ the_overall_rating }}</div>
+```
 
 
 Likewise for displaying a user's rating:
 
+```django
     {% user_rating request.user obj as the_user_rating %}
 
     <div class="user_rating">{{ the_user_rating }}</div>
+```
 
 
 If you want to add an AJAX form for allowing a user to set a rating, add the
 following in the appropriate location on your page:
 
+```django
     <div id="user_rating"></div>
-
+```
 
 And then add this near the end of your HTML `<body>` to emit some Javascript
 libraries and hook up the ratings UI:
 
+```django
     {% user_rating_js request.user obj %}
+```
 
 
 If you want to do any rating based on categories of ratings for an object or
 objects then you do the same as above but just use an optional argument on
 the tags:
 
+
+```django
     {% overall_rating obj "accuracy" as category_rating %}
 
     <div class="overall_rating category-accuracy">
         {{ category_rating }}
     </div>
+```
 
 and
 
+```django
     {% user_rating request.user obj "accuracy" as category_rating %}
 
     <div class="user_rating category-accuracy">
         {{ category_rating }}
     </div>
+```
 
 and
 
+```django
     <div id="user_rating" class="category-accuracy"></div>
 
     {% user_rating_js request.user obj "accuracy" %}
+```
+
     
 ### Settings
 
-_pinax_ratings_num_of_ratings:
-
-PINAX_RATINGS_NUM_OF_RATINGS
+#### PINAX_RATINGS_NUM_OF_RATINGS
 
 Default: 5
 
 Defines the number of different rating choices there will be.
 
-PINAX_RATINGS_CATEGORY_CHOICES
+#### PINAX_RATINGS_CATEGORY_CHOICES
 
 Default: `None`
 
@@ -168,6 +194,7 @@ It should follow the format of a dictionary of dictionaries. For example, think 
 the context of a website that allowed ratings of photographs and articles
 published by other users:
 
+```python
     PINAX_RATINGS_CATEGORY_CHOICES = {
         "app.Model": {
             "exposure": "How good is the exposure?",
@@ -180,13 +207,18 @@ published by other users:
             "compelling": "Is the article compelling?"
         }
     }
+```
     
 ### Templates
 
-`pinax-ratings` comes with one template that is a minimal snippet that gets rendered
-from the template tags for displaying the rating form.
+`pinax-ratings` comes with two minimal template snippets rendered
+by template tags for displaying the rating form.
 
-#### _script.html
+Templates are found in "pinax/ratings/" subdirectory for your project.
+
+#### `_rating.html`
+
+#### `_script.html`
 
 This is a snippet that renders the bundled Javascript and a simple AJAX posting and
 hooking up of a rating UI. This is optional and overridable by the site developer.
@@ -198,6 +230,7 @@ hooking up of a rating UI. This is optional and overridable by the site develope
 
 * Add Django 2.0 compatibility testing
 * Drop Django 1.8, 1.9, 1.10, and Python 3.3 support
+* Add URL namespacing (BI: urlname "pinax_ratings_rate" is now "pinax_ratings:rate")
 * Move documentation into README and standardize layout
 * Convert CI and coverage to CircleCi and CodeCov
 * Add PyPi-compatible long description
