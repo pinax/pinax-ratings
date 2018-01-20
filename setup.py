@@ -1,5 +1,6 @@
 from setuptools import find_packages, setup
 
+VERSION = "3.0.0"
 LONG_DESCRIPTION = """
 .. image:: http://pinaxproject.com/pinax-design/patches/pinax-ratings.svg
     :target: https://pypi.python.org/pypi/pinax-ratings/
@@ -53,7 +54,7 @@ setup(
     description="a ratings app for Django",
     name="pinax-ratings",
     long_description=LONG_DESCRIPTION,
-    version="3.0.0",
+    version=VERSION,
     url="http://github.com/pinax/pinax-ratings/",
     license="MIT",
     packages=find_packages(),
@@ -83,8 +84,8 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     install_requires=[
+        "django>=1.11",
         "django-user-accounts>=2.0.3",
-        "Django>=1.8"
     ],
     tests_require=[
     ],
