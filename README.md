@@ -67,7 +67,7 @@ Add ``pinax-ratings`` to your ``INSTALLED_APPS`` setting:
     ]
 ```
 
-Next add `pinax-ratings.urls` to your urls definition:
+Next add `pinax.ratings.urls` to your urls definition:
 
 ```python
     urlpatterns = [
