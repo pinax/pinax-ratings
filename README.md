@@ -56,9 +56,9 @@ To install pinax-ratings:
 
 ```shell
     $ pip install pinax-ratings
-``
+```
 
-Add ``pinax-ratings`` to your ``INSTALLED_APPS`` setting:
+Add `pinax.ratings` to your ``INSTALLED_APPS`` setting:
 
 ```python
     INSTALLED_APPS = [
@@ -67,7 +67,7 @@ Add ``pinax-ratings`` to your ``INSTALLED_APPS`` setting:
     ]
 ```
 
-Next add `pinax.ratings.urls` to your urls definition:
+Next, add `pinax.ratings.urls` to your project urlpatterns:
 
 ```python
     urlpatterns = [
