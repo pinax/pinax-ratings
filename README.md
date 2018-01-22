@@ -13,6 +13,7 @@
 [![](http://slack.pinaxproject.com/badge.svg)](http://slack.pinaxproject.com/)
 [![](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
+
 ## Table of Contents
 
 * [About Pinax](#about-pinax)
@@ -29,10 +30,12 @@
 * [Connect with Pinax](#connect-with-pinax)
 * [License](#license)
 
+
 ## About Pinax
 
 Pinax is an open-source platform built on the Django Web Framework. It is an ecosystem of reusable
 Django apps, themes, and starter project templates. This collection can be found at http://pinaxproject.com.
+
 
 ## pinax-ratings
 
@@ -95,7 +98,6 @@ Optionally, if want to use the ratings category feature of `pinax-ratings` then 
     }
 ```
 
-
 ### Usage
 
 Integrating `pinax-ratings` into your project is just a matter of using a couple of
@@ -117,7 +119,6 @@ a context variable and display it:
     <div class="overall_rating">{{ the_overall_rating }}</div>
 ```
 
-
 Likewise for displaying a user's rating:
 
 ```django
@@ -125,7 +126,6 @@ Likewise for displaying a user's rating:
 
     <div class="user_rating">{{ the_user_rating }}</div>
 ```
-
 
 If you want to add an AJAX form for allowing a user to set a rating, add the
 following in the appropriate location on your page:
@@ -141,11 +141,9 @@ libraries and hook up the ratings UI:
     {% user_rating_js request.user obj %}
 ```
 
-
 If you want to do any rating based on categories of ratings for an object or
 objects then you do the same as above but just use an optional argument on
 the tags:
-
 
 ```django
     {% overall_rating obj "accuracy" as category_rating %}
@@ -173,7 +171,6 @@ and
     {% user_rating_js request.user obj "accuracy" %}
 ```
 
-    
 ### Settings
 
 #### PINAX_RATINGS_NUM_OF_RATINGS
@@ -302,6 +299,7 @@ and ping us there instead of creating an issue on GitHub. Creating issues on Git
 also valid but we are usually able to help you faster if you ping us in Slack.
 
 We also highly recommend reading our blog post on [Open Source and Self-Care](http://blog.pinaxproject.com/2016/01/19/open-source-and-self-care/).
+
 
 ## Code of Conduct
 
