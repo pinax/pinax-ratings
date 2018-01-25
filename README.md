@@ -223,6 +223,10 @@ hooking up of a rating UI. This is optional and overridable by the site develope
 
 ## Change Log
 
+### 3.0.1
+
+* Import reverse from django.urls
+
 ### 3.0.0
 
 * Add Django 2.0 compatibility testing
