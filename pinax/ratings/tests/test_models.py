@@ -8,7 +8,7 @@ from .models import Car
 from .test import TestCase
 
 
-class RatingTestCase(TestCase):
+class RatingModelTests(TestCase):
 
     def setUp(self):
         self.paltman = User.objects.create(username="paltman")
