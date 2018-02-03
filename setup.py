@@ -88,6 +88,7 @@ setup(
         "django-user-accounts>=2.0.3",
     ],
     tests_require=[
+        "django-test-plus>=1.0.22"
     ],
     test_suite="runtests.runtests",
     zip_safe=False
