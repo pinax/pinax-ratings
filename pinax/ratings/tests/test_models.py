@@ -1,11 +1,11 @@
 from decimal import Decimal
 
 from django.contrib.auth.models import User
-from .test import TestCase
 
 from pinax.ratings.models import Rating
 
 from .models import Car
+from .test import TestCase
 
 
 class RatingTestCase(TestCase):
