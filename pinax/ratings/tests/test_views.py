@@ -5,16 +5,20 @@ from .test import TestCase
 
 
 class RateViewTest(TestCase):
-    # tests for the RateView
+    """
+    tests for the RateView
+    """
 
     def setUp(self):
         self.test_user = self.make_user(username="test_user")
         self.forester = Car.objects.create(name="Subaru Forester")
 
-    def test_post_rating_with_invalid_content_type_id(self):
-        # test line with code snippet:
-        #   get_object_or_404(ContentType, pk=self.kwargs.get("content_type_id"))
-        #
+    def test_post_rating_returns_404(self):
+        """
+        Ensure view returns 404 if object is not found. This should
+        typically happen when one of the two kwargs i.e content_type_id
+        and object_id have invalid data
+        """
         with self.login(self.test_user):
             response = self.post(
                 "pinax_ratings:rate",
@@ -27,26 +31,12 @@ class RateViewTest(TestCase):
             )
             self.response_404(response)
 
-    def test_post_rating_with_invalid_object_id(self):
-        # test line with code snippet:
-        #   get_object_or_404(ct.model_class(), pk=self.kwargs.get("object_id"))
-        #
-        with self.login(self.test_user):
-            response = self.post(
-                "pinax_ratings:rate",
-                content_type_id=ContentType.objects.get_for_model(self.forester).pk,
-                object_id=100,
-                data={
-                    "rating": 3,
-                    "category": "handling"
-                },
-            )
-            self.response_404(response)
-
     def test_post_rating_with_invalid_category(self):
-        # tests the condition:
-        #   if category and cat_choice is None:
-        #
+        """
+        Ensure view returns 403 if an invalid category choice
+        is provided in the POST data. category choices are added
+        to the PINAX_RATINGS_CATEGORY_CHOICES setting in settings.py
+        """
         with self.login(self.test_user):
             response = self.post(
                 "pinax_ratings:rate",
@@ -59,23 +49,51 @@ class RateViewTest(TestCase):
             )
             self.response_403(response)
 
-    def test_post_rating_with_invalid_rating(self):
-        # tests the condition:
-        #   if rating_input not in range(NUM_OF_RATINGS + 1):
-        #
+    def test_post_rating_greater_than_range(self):
+        """
+        Ensure view returns 403 if the rating is greater than the
+        NUM_OF_RATINGS setting added to the PINAX_RATINGS_NUM_OF_RATINGS setting
+        in settings.py
+        """
         with self.login(self.test_user):
             response = self.post(
                 "pinax_ratings:rate",
                 content_type_id=ContentType.objects.get_for_model(self.forester).pk,
                 object_id=self.forester.pk,
                 data={
-                    "rating": 10,
+                    "rating": 4,
+                    "category": "handling"
+                },
+            )
+            self.response_403(response)
+
+    def test_post_rating_less_than_range(self):
+        """
+        Ensure view returns 403 if the rating is less than the
+        NUM_OF_RATINGS setting added to the PINAX_RATINGS_NUM_OF_RATINGS setting
+        in settings.py
+        """
+        with self.login(self.test_user):
+            response = self.post(
+                "pinax_ratings:rate",
+                content_type_id=ContentType.objects.get_for_model(self.forester).pk,
+                object_id=self.forester.pk,
+                data={
+                    "rating": -1,
                     "category": "handling"
                 },
             )
             self.response_403(response)
 
     def test_post_rating_with_valid_data(self):
+        """
+        Ensure view returns 200 if valid data is passed to
+        the view. For data to be valid, the following conditions
+        must be met;
+        1. The url kwargs content_type_id and object_id both have valid IDs
+        2. The body of the POST request has keys rating and category with
+        valid values of rating num within the the range and valid category choice
+        """
         with self.login(self.test_user):
             content_type_id = ContentType.objects.get_for_model(self.forester).pk
             object_id = self.forester.pk
@@ -88,11 +106,7 @@ class RateViewTest(TestCase):
                     "category": "handling"
                 },
             )
-            # assert http response code
             self.response_200(response)
-            # assert the data returned is as expected
             self.assertContext("user_rating", 3)
             self.assertContext("category", "handling")
             self.assertContext("overall_rating", 3.0)
-            self.assertContext("content_type_id", str(content_type_id))
-            self.assertContext("object_id", str(object_id))
