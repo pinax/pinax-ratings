@@ -39,11 +39,12 @@ DEFAULT_SETTINGS = dict(
             "NAME": ":memory:",
         }
     },
-    PINAX_RATINGS_CATEGORY_CHOICES = {
+    PINAX_RATINGS_CATEGORY_CHOICES={
         "tests.Car": {
             "handling": "How good is the handling?",
         }
     },
+    PINAX_RATINGS_NUM_OF_RATINGS=3,
     SITE_ID=1,
     ROOT_URLCONF="pinax.ratings.tests.urls",
     SECRET_KEY="notasecret",
