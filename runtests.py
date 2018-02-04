@@ -12,9 +12,26 @@ DEFAULT_SETTINGS = dict(
         "django.contrib.auth",
         "django.contrib.contenttypes",
         "django.contrib.sites",
+        "django.contrib.sessions",
         "account",
         "pinax.ratings",
         "pinax.ratings.tests"
+    ],
+    MIDDLEWARE=[
+        "django.contrib.sessions.middleware.SessionMiddleware",
+        "django.contrib.auth.middleware.AuthenticationMiddleware"
+    ],
+    TEMPLATES=[
+        {
+            "BACKEND": "django.template.backends.django.DjangoTemplates",
+            "APP_DIRS": True,
+            "OPTIONS": {
+                "debug": True,
+                "context_processors": [
+                    "django.contrib.auth.context_processors.auth",
+                ]
+            }
+        },
     ],
     DATABASES={
         "default": {
@@ -22,6 +39,12 @@ DEFAULT_SETTINGS = dict(
             "NAME": ":memory:",
         }
     },
+    PINAX_RATINGS_CATEGORY_CHOICES={
+        "tests.Car": {
+            "handling": "How good is the handling?",
+        }
+    },
+    PINAX_RATINGS_NUM_OF_RATINGS=3,
     SITE_ID=1,
     ROOT_URLCONF="pinax.ratings.tests.urls",
     SECRET_KEY="notasecret",

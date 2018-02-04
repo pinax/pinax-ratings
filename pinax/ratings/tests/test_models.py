@@ -1,14 +1,14 @@
 from decimal import Decimal
 
 from django.contrib.auth.models import User
-from django.test import TestCase
 
 from pinax.ratings.models import Rating
 
 from .models import Car
+from .test import TestCase
 
 
-class Tests(TestCase):
+class RatingModelTests(TestCase):
 
     def setUp(self):
         self.paltman = User.objects.create(username="paltman")
