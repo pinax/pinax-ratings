@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 
 from .models import Car
@@ -43,7 +44,7 @@ class RateViewTest(TestCase):
                 content_type_id=ContentType.objects.get_for_model(self.forester).pk,
                 object_id=self.forester.pk,
                 data={
-                    "rating": 4,
+                    "rating": settings.PINAX_RATINGS_NUM_OF_RATINGS,
                     "category": "non-existing-category"
                 },
             )
@@ -51,9 +52,8 @@ class RateViewTest(TestCase):
 
     def test_post_rating_greater_than_range(self):
         """
-        Ensure view returns 403 if the rating is greater than the
-        NUM_OF_RATINGS setting added to the PINAX_RATINGS_NUM_OF_RATINGS setting
-        in settings.py
+        Ensure view returns 403 if the rating is greater
+        than the minimum rating enforced by RatingView
         """
         with self.login(self.test_user):
             response = self.post(
@@ -61,7 +61,7 @@ class RateViewTest(TestCase):
                 content_type_id=ContentType.objects.get_for_model(self.forester).pk,
                 object_id=self.forester.pk,
                 data={
-                    "rating": 4,
+                    "rating": settings.PINAX_RATINGS_NUM_OF_RATINGS + 1,
                     "category": "handling"
                 },
             )
@@ -69,9 +69,8 @@ class RateViewTest(TestCase):
 
     def test_post_rating_less_than_range(self):
         """
-        Ensure view returns 403 if the rating is less than the
-        NUM_OF_RATINGS setting added to the PINAX_RATINGS_NUM_OF_RATINGS setting
-        in settings.py
+        Ensure view returns 403 if the rating is less
+        than the minimum rating enforced by RatingView
         """
         with self.login(self.test_user):
             response = self.post(
