@@ -71,7 +71,7 @@ def overall_rating(object, category=""):
 def rating_post_url(user, obj):
     ct = ContentType.objects.get_for_model(obj)
     post_url = reverse(
-        "pinax_ratings_rate",
+        "pinax_ratings:rate",
         kwargs={
             "content_type_id": ct.pk,
             "object_id": obj.pk
