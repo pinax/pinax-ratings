@@ -1,8 +1,11 @@
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.template import Context, Template
+from django.urls import reverse
 
 from .models import Car
 from .test import TestCase
+from ..templatetags.pinax_ratings_tags import user_rating_js
 
 
 class TemplateTagsTest(TestCase):
@@ -11,18 +14,22 @@ class TemplateTagsTest(TestCase):
     """
 
     def setUp(self):
+        self.default_rating = 2
+        self.default_category = "handling"
+        self.other_category = "color"
         self.test_user = self.make_user(username="test_user")
         self.another_user = self.make_user(username="another_user")
         self.none_car_object = self.make_user(username="a_user")
         self.benz = Car.objects.create(name="Mercedes c200")
-        self.post_a_rating(self.test_user, 2)
+        self.post_a_rating(self.test_user, self.default_rating)
 
-    def post_a_rating(self, user, rating):
+    def post_a_rating(self, user, rating, category="handling"):
         """
         Helper function to post a rating for the benz object of
         type Car used in the tests
         :param user: User
         :param rating: int
+        :param category: str
         :return: http response object
         """
         with self.login(user):
@@ -32,9 +39,24 @@ class TemplateTagsTest(TestCase):
                 object_id=self.benz.pk,
                 data={
                     "rating": rating,
-                    "category": "handling"
+                    "category": category
                 },
             )
+
+    def config_template_context(self, ctx=None):
+        """
+        Helper function that configures the context for the template
+        :param ctx: dictionary
+        :return: context object
+        """
+        if ctx is None:
+            ctx = {
+                "user": self.test_user,
+                "object": self.benz,
+                "category": self.default_category
+            }
+        context = Context(ctx)
+        return context
 
     def test_user_rating_tag_with_category(self):
         """
@@ -42,20 +64,31 @@ class TemplateTagsTest(TestCase):
         as posted by the user on a Car object they are rating
         for a specified category in the context
         """
-
         template = Template(
             "{% load pinax_ratings_tags %}"
-            "{% user_rating user object category as the_rating %}"
+            "{% user_rating user object category %}"
         )
-        context = Context({
+
+        context = self.config_template_context()
+
+        rendered = template.render(context)
+        self.assertIn(str(self.default_rating), rendered)
+
+        self.post_a_rating(
+            self.test_user,
+            self.default_rating + 1,
+            self.other_category
+        )
+
+        context = self.config_template_context({
             "user": self.test_user,
             "object": self.benz,
-            "category": "handling"
+            "category": self.other_category
         })
-        template.render(context)
-        self.assertEqual(context["the_rating"], 2)
+        rendered = template.render(context)
+        self.assertIn(str(self.default_rating + 1), rendered)
 
-    def test_user_rating_tag_no_category(self):
+    def test_user_rating_tag_with_no_category(self):
         """
         Ensure the template tag user_rating renders a rating
         as posted by the user on a Car object they are rating.
@@ -64,15 +97,25 @@ class TemplateTagsTest(TestCase):
 
         template = Template(
             "{% load pinax_ratings_tags %}"
-            "{% user_rating user object category as the_rating %}"
+            "{% user_rating user object %}"
         )
-        context = Context({
+        context = self.config_template_context({
             "user": self.test_user,
-            "object": self.benz,
-            "category": ""
+            "object": self.benz
         })
-        template.render(context)
-        self.assertEqual(context["the_rating"], 2)
+
+        rendered = template.render(context)
+        self.assertIn(str(self.default_rating), rendered)
+
+        self.post_a_rating(
+            self.test_user,
+            self.default_rating + 1,
+            self.other_category
+        )
+
+        rendered = template.render(context)
+        # the overall rating should be equal to (2 + 3 /2)
+        self.assertIn(str(2.5), rendered)
 
     def test_overall_rating_tag_with_category(self):
         """
@@ -81,18 +124,27 @@ class TemplateTagsTest(TestCase):
         context
         """
 
-        self.post_a_rating(self.another_user, 3)
-
         template = Template(
             "{% load pinax_ratings_tags %}"
-            "{% overall_rating object category as the_overall_rating %}"
+            "{% overall_rating object category %}"
         )
-        context = Context({
+
+        self.post_a_rating(
+            self.test_user,
+            self.default_rating + 1,
+            self.other_category
+        )
+
+        self.post_a_rating(self.another_user, self.default_rating + 1)
+
+        context = self.config_template_context({
             "object": self.benz,
-            "category": "handling"
+            "category": self.default_category
         })
-        template.render(context)
-        self.assertEqual(context["the_overall_rating"], 2.5)
+
+        rendered = template.render(context)
+        # the overall rating should be equal to (2 + 3 /2)
+        self.assertIn(str(2.5), rendered)
 
     def test_overall_rating_tag_with_no_category(self):
         """
@@ -102,31 +154,38 @@ class TemplateTagsTest(TestCase):
 
         template = Template(
             "{% load pinax_ratings_tags %}"
-            "{% overall_rating object category as the_overall_rating %}"
+            "{% overall_rating object %}"
         )
-        context = Context({
-            "object": self.benz,
-            "category": ""
+
+        self.post_a_rating(
+            self.test_user,
+            self.default_rating + 1,
+            self.other_category
+        )
+
+        context = self.config_template_context({
+            "object": self.benz
         })
-        template.render(context)
-        self.assertEqual(context["the_overall_rating"], 2.0)
+
+        rendered = template.render(context)
+        # the overall rating should be equal to (2 + 3 /2)
+        self.assertIn(str(2.5), rendered)
 
     def test_ratings_tag(self):
         """
         Ensure the template tag ratings_tag renders the rating
         """
-
         template = Template(
             "{% load pinax_ratings_tags %}"
-            "{% ratings object as a_rating %}"
+            "{% ratings object %}"
         )
         context = Context({
             "object": self.benz
         })
-        template.render(context)
-        self.assertEqual(context["a_rating"], [])
+        rendered = template.render(context)
+        self.assertIn(str(self.default_rating), rendered)
 
-    def test_user_rating_url(self):
+    def test_user_rating_url_tag(self):
         """
         Ensure the template tag user_rating_url renders the
         post ratings url with the correct kwargs
@@ -134,19 +193,21 @@ class TemplateTagsTest(TestCase):
 
         template = Template(
             "{% load pinax_ratings_tags %}"
-            "{% user_rating_url user object as url %}"
+            "{% user_rating_url user object %}"
         )
         context = Context({
             "user": self.test_user,
             "object": self.benz
         })
-        template.render(context)
-        self.assertEqual(
-            context["url"],
-            "/{}/{}/rate/".format(
-                ContentType.objects.get_for_model(self.benz).pk,
-                self.benz.pk
-            )
+        rendered = template.render(context)
+        self.assertIn(
+            reverse(
+                "pinax_ratings:rate",
+                kwargs={
+                    "content_type_id": ContentType.objects.get_for_model(self.benz).pk,
+                    "object_id": self.benz.pk
+                }),
+            rendered
         )
 
     def test_rating_count_tag(self):
@@ -157,65 +218,46 @@ class TemplateTagsTest(TestCase):
 
         template = Template(
             "{% load pinax_ratings_tags %}"
-            "{% rating_count object as count %}"
+            "{% rating_count object %}"
         )
-        context = Context({
+
+        self.post_a_rating(
+            self.another_user,
+            self.default_rating + 1,
+            self.other_category
+        )
+
+        context = self.config_template_context({
             "object": self.benz
         })
-        template.render(context)
-        self.assertEqual(context["count"], 1)
+
+        rendered = template.render(context)
+        # ratings count should be 2
+        self.assertIn(str(2), rendered)
 
     def test_user_rating_js_tag(self):
         """
-
+        Ensure the correct context is returned for the
+        template
         """
-        template = Template(
-            "{% load pinax_ratings_tags %}"
-            "{% user_rating_js user object %}"
+
+        self.post_a_rating(
+            self.another_user,
+            self.default_rating + 1,
+            self.other_category
         )
-        context = Context({
-            "user": self.test_user,
-            "object": self.benz,
-            "category": "handling"
-        })
-        rendered_template = template.render(context)
-        self.assertInHTML(
-            """
-            <script type="text/javascript">
-                $(function () {
-                    // Assumptions:
-                    // 1. you have a div with the id of "user_rating" where you want the stars to go
-                    // 2. you have a container with the class .overall_rating where the new average rating will go
-                    $("#user_rating").raty({
-                        score: function() {
-                            return $(this).attr('data-score');
-                        },
-                        click: function(score, evt) {
-                            var current_rating = 0;
-                            if (score != null) {
-                                current_rating = score;
-                            }
-                            console.log("Score", score, "/17/1/rate/");
-                            $.ajax({
-                                url: "/17/1/rate/",
-                                type: "POST",
-                                data: {
-                                    "rating": current_rating
-                                },
-                                statusCode: {
-                                    403: function(jqXHR, textStatus, errorThrown) {
-                                        // Invalid rating was posted or invalid category was sent
-                                        console.log(errorThrown);
-                                    },
-                                    200: function(data, textStatus, jqXHR) {
-                                            $(".overall_rating").text(data["overall_rating"]);
-                                    }
-                                }
-                            });
-                        },
-                        cancel: true,
-                        path: "Nonepinax/ratings/img/"
-                    });
-                });
-            </script>
-            """, rendered_template)
+
+        context = user_rating_js(self.another_user, self.benz, self.other_category)
+
+        self.assertEqual(context["obj"], self.benz)
+        self.assertEqual(context["category"], "color")
+        self.assertEqual(context["the_user_rating"], self.default_rating + 1)
+        self.assertEqual(context["STATIC_URL"], settings.STATIC_URL)
+        self.assertEqual(
+            context["post_url"],
+            reverse(
+                "pinax_ratings:rate",
+                kwargs={
+                "content_type_id": ContentType.objects.get_for_model(self.benz).pk,
+                "object_id": self.benz.pk
+            }))
