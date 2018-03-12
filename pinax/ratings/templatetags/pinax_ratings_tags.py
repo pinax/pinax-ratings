@@ -100,8 +100,7 @@ def ratings(obj):
     try:
         return OverallRating.objects.get(
             content_type=ct,
-            object_id=obj.pk,
-            category=""
+            object_id=obj.pk
         ).ratings.all()
     except OverallRating.DoesNotExist:
         return []
