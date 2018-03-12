@@ -42,12 +42,14 @@ DEFAULT_SETTINGS = dict(
     PINAX_RATINGS_CATEGORY_CHOICES={
         "tests.Car": {
             "handling": "How good is the handling?",
+            "color": "How good is the color?"
         }
     },
     PINAX_RATINGS_NUM_OF_RATINGS=3,
     SITE_ID=1,
     ROOT_URLCONF="pinax.ratings.tests.urls",
     SECRET_KEY="notasecret",
+    STATIC_URL="/your/static/folder/"
 )
 
 
