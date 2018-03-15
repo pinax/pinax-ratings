@@ -3,9 +3,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.template import Context, Template
 from django.urls import reverse
 
+from ..models import Rating
 from .models import Car
 from .test import TestCase
-from ..templatetags.pinax_ratings_tags import user_rating_js
+from ..templatetags.pinax_ratings_tags import user_rating_js, ratings
 
 
 class TemplateTagsTest(TestCase):
@@ -173,17 +174,15 @@ class TemplateTagsTest(TestCase):
 
     def test_ratings_tag(self):
         """
-        Ensure the template tag ratings_tag renders the rating
+        Ensure a query set is returned
         """
-        template = Template(
-            "{% load pinax_ratings_tags %}"
-            "{% ratings object %}"
+        content_type = ContentType.objects.get_for_model(self.benz)
+        output = ratings(self.benz)
+        expected = Rating.objects.filter(
+            content_type=content_type,
+            object_id=self.benz.pk
         )
-        context = Context({
-            "object": self.benz
-        })
-        rendered = template.render(context)
-        self.assertIn(str(self.default_rating), rendered)
+        self.assertSetEqual(set(output), set(expected))
 
     def test_user_rating_url_tag(self):
         """
