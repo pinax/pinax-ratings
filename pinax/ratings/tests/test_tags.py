@@ -4,9 +4,9 @@ from django.template import Context, Template
 from django.urls import reverse
 
 from ..models import Rating
+from ..templatetags.pinax_ratings_tags import ratings, user_rating_js
 from .models import Car
 from .test import TestCase
-from ..templatetags.pinax_ratings_tags import user_rating_js, ratings
 
 
 class TemplateTagsTest(TestCase):
@@ -89,6 +89,26 @@ class TemplateTagsTest(TestCase):
         rendered = template.render(context)
         self.assertIn(str(self.default_rating + 1), rendered)
 
+    def test_user_rating_tag_with_category_on_non_car_obj(self):
+        """
+        This test ensures that a rating of zero is returned when you
+        rate another object other than the one expected to be rated. In
+        this case we are rating a User object instead of a Car object
+        """
+        template = Template(
+            "{% load pinax_ratings_tags %}"
+            "{% user_rating user object category %}"
+        )
+        context = self.config_template_context(
+            ctx={
+                "user": self.test_user,
+                "object": self.none_car_object,
+                "category": self.default_category
+            }
+        )
+        rendered = template.render(context)
+        self.assertIn(str(0), rendered)
+
     def test_user_rating_tag_with_no_category(self):
         """
         Ensure the template tag user_rating renders a rating
@@ -147,6 +167,24 @@ class TemplateTagsTest(TestCase):
         # the overall rating should be equal to (2 + 3 /2)
         self.assertIn(str(2.5), rendered)
 
+    def test_overall_rating_tag_with_category_on_non_car_obj(self):
+        """
+        This test ensures that an overall rating of zero is returned when you
+        rate another object other than the one expected to be rated. In
+        this case we are rating a User object instead of a Car object
+        """
+        template = Template(
+            "{% load pinax_ratings_tags %}"
+            "{% overall_rating object category %}"
+        )
+        context = self.config_template_context({
+            "object": self.none_car_object,
+            "category": self.default_category
+        })
+
+        rendered = template.render(context)
+        self.assertIn(str(0), rendered)
+
     def test_overall_rating_tag_with_no_category(self):
         """
         Ensure the template tag overall_rating renders an
@@ -183,6 +221,14 @@ class TemplateTagsTest(TestCase):
             object_id=self.benz.pk
         )
         self.assertSetEqual(set(output), set(expected))
+
+    def test_ratings_tag_with_non_car_obj(self):
+        """
+        Ensure a query set is returned
+        """
+        ContentType.objects.get_for_model(self.none_car_object)
+        output = ratings(self.none_car_object)
+        self.assertEqual(len(output), 0)
 
     def test_user_rating_url_tag(self):
         """
@@ -257,6 +303,7 @@ class TemplateTagsTest(TestCase):
             reverse(
                 "pinax_ratings:rate",
                 kwargs={
-                "content_type_id": ContentType.objects.get_for_model(self.benz).pk,
-                "object_id": self.benz.pk
-            }))
+                    "content_type_id": ContentType.objects.get_for_model(self.benz).pk,
+                    "object_id": self.benz.pk
+                }
+            ))
