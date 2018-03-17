@@ -87,7 +87,7 @@ class TemplateTagsTest(TestCase):
             "category": self.other_category
         })
         rendered = template.render(context)
-        self.assertIn(str(self.default_rating + 1), rendered)
+        self.assertEqual(str(self.default_rating + 1), rendered)
 
     def test_user_rating_tag_with_category_on_not_rated_object(self):
         """
@@ -107,13 +107,13 @@ class TemplateTagsTest(TestCase):
             }
         )
         rendered = template.render(context)
-        self.assertIn(str(0), rendered)
+        self.assertEqual(str(0), rendered)
 
     def test_user_rating_tag_with_no_category(self):
         """
         Ensure the template tag user_rating renders a rating
-        as posted by the user on a Car object they are rating.
-        in this test, no category is specified
+        as posted by the user on a Car object they are rating,
+        regardless of Rating category.
         """
 
         template = Template(
@@ -135,8 +135,7 @@ class TemplateTagsTest(TestCase):
         )
 
         rendered = template.render(context)
-        # the overall rating should be equal to (2 + 3 /2)
-        self.assertIn(str(2.5), rendered)
+        self.assertEqual(str(2.5), rendered)
 
     def test_overall_rating_tag_with_category(self):
         """
@@ -150,13 +149,14 @@ class TemplateTagsTest(TestCase):
             "{% overall_rating object category %}"
         )
 
+        # Add rating for a different category, much higher than other rating
         self.post_a_rating(
             self.test_user,
-            self.default_rating + 1,
+            self.default_rating + 3,
             self.other_category
         )
-
-        self.post_a_rating(self.another_user, self.default_rating + 1)
+        # Add rating by different user, same category as setUp rating
+        self.post_a_rating(self.another_user, self.default_rating)
 
         context = self.config_template_context({
             "object": self.benz,
@@ -164,8 +164,7 @@ class TemplateTagsTest(TestCase):
         })
 
         rendered = template.render(context)
-        # the overall rating should be equal to (2 + 3 /2)
-        self.assertIn(str(2.5), rendered)
+        self.assertEqual(str(2.0), rendered)
 
     def test_overall_rating_tag_with_category_on_not_rated_object(self):
         """
@@ -183,7 +182,7 @@ class TemplateTagsTest(TestCase):
         })
 
         rendered = template.render(context)
-        self.assertIn(str(0), rendered)
+        self.assertEqual(str(0), rendered)
 
     def test_overall_rating_tag_with_no_category(self):
         """
@@ -208,7 +207,7 @@ class TemplateTagsTest(TestCase):
 
         rendered = template.render(context)
         # the overall rating should be equal to (2 + 3 /2)
-        self.assertIn(str(2.5), rendered)
+        self.assertEqual(str(2.5), rendered)
 
     def test_ratings_tag(self):
         """
@@ -245,15 +244,13 @@ class TemplateTagsTest(TestCase):
             "object": self.benz
         })
         rendered = template.render(context)
-        self.assertIn(
-            reverse(
-                "pinax_ratings:rate",
-                kwargs={
-                    "content_type_id": ContentType.objects.get_for_model(self.benz).pk,
-                    "object_id": self.benz.pk
-                }),
-            rendered
-        )
+        url_path = reverse(
+            "pinax_ratings:rate",
+            kwargs={
+                "content_type_id": ContentType.objects.get_for_model(self.benz).pk,
+                "object_id": self.benz.pk
+            })
+        self.assertIn(url_path, rendered)
 
     def test_rating_count_tag(self):
         """
@@ -278,7 +275,7 @@ class TemplateTagsTest(TestCase):
 
         rendered = template.render(context)
         # ratings count should be 2
-        self.assertIn(str(2), rendered)
+        self.assertEqual(str(2), rendered)
 
     def test_user_rating_js_tag(self):
         """
