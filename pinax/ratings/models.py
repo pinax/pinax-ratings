@@ -12,8 +12,8 @@ from .managers import OverallRatingManager
 
 try:
     from django.contrib.contenttypes.fields import GenericForeignKey
-except:
-    from django.contrib.contenttypes.generic import GenericForeignKey
+except:  # pragma: no cover
+    from django.contrib.contenttypes.generic import GenericForeignKey  # pragma: no cover
 
 
 class OverallRating(models.Model):

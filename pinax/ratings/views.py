@@ -10,8 +10,8 @@ from .models import Rating
 
 try:
     from account.mixins import LoginRequiredMixin
-except ImportError:
-    from django.contrib.auth.mixins import LoginRequiredMixin
+except ImportError:  # pragma: no cover
+    from django.contrib.auth.mixins import LoginRequiredMixin  # pragma: no cover
 
 NUM_OF_RATINGS = getattr(settings, "PINAX_RATINGS_NUM_OF_RATINGS", 5)
 

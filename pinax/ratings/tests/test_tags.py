@@ -20,7 +20,7 @@ class TemplateTagsTest(TestCase):
         self.other_category = "color"
         self.test_user = self.make_user(username="test_user")
         self.another_user = self.make_user(username="another_user")
-        self.none_car_object = self.make_user(username="a_user")
+        self.not_rated_object = self.make_user(username="a_user")
         self.benz = Car.objects.create(name="Mercedes c200")
         self.post_a_rating(self.test_user, self.default_rating)
 
@@ -89,7 +89,7 @@ class TemplateTagsTest(TestCase):
         rendered = template.render(context)
         self.assertIn(str(self.default_rating + 1), rendered)
 
-    def test_user_rating_tag_with_category_on_non_car_obj(self):
+    def test_user_rating_tag_with_category_on_not_rated_object(self):
         """
         This test ensures that a rating of zero is returned when you
         rate another object other than the one expected to be rated. In
@@ -102,7 +102,7 @@ class TemplateTagsTest(TestCase):
         context = self.config_template_context(
             ctx={
                 "user": self.test_user,
-                "object": self.none_car_object,
+                "object": self.not_rated_object,
                 "category": self.default_category
             }
         )
@@ -167,7 +167,7 @@ class TemplateTagsTest(TestCase):
         # the overall rating should be equal to (2 + 3 /2)
         self.assertIn(str(2.5), rendered)
 
-    def test_overall_rating_tag_with_category_on_non_car_obj(self):
+    def test_overall_rating_tag_with_category_on_not_rated_object(self):
         """
         This test ensures that an overall rating of zero is returned when you
         rate another object other than the one expected to be rated. In
@@ -178,7 +178,7 @@ class TemplateTagsTest(TestCase):
             "{% overall_rating object category %}"
         )
         context = self.config_template_context({
-            "object": self.none_car_object,
+            "object": self.not_rated_object,
             "category": self.default_category
         })
 
@@ -222,12 +222,12 @@ class TemplateTagsTest(TestCase):
         )
         self.assertSetEqual(set(output), set(expected))
 
-    def test_ratings_tag_with_non_car_obj(self):
+    def test_ratings_tag_with_not_rated_object(self):
         """
         Ensure a query set is returned
         """
-        ContentType.objects.get_for_model(self.none_car_object)
-        output = ratings(self.none_car_object)
+        ContentType.objects.get_for_model(self.not_rated_object)
+        output = ratings(self.not_rated_object)
         self.assertEqual(len(output), 0)
 
     def test_user_rating_url_tag(self):
