@@ -13,7 +13,7 @@ DEFAULT_SETTINGS = dict(
         "django.contrib.contenttypes",
         "django.contrib.sites",
         "django.contrib.sessions",
-        "account",
+
         "pinax.ratings",
         "pinax.ratings.tests"
     ],
@@ -42,10 +42,10 @@ DEFAULT_SETTINGS = dict(
     PINAX_RATINGS_CATEGORY_CHOICES={
         "tests.Car": {
             "handling": "How good is the handling?",
-            "color": "How good is the color?"
+            "speed": "How is acceleration and top speed?"
         }
     },
-    PINAX_RATINGS_NUM_OF_RATINGS=3,
+    PINAX_RATINGS_NUM_OF_RATINGS=5,
     SITE_ID=1,
     ROOT_URLCONF="pinax.ratings.tests.urls",
     SECRET_KEY="notasecret",

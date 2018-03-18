@@ -104,14 +104,19 @@ Integrating `pinax-ratings` into your project is just a matter of using a couple
 template tags and wiring up a bit of javascript. The rating form is intended
 to function via AJAX and as such returns JSON.
 
-Firstly, add load the template tags for `pinax-ratings`:
+First add load the template tags for `pinax-ratings`:
 
 ```django
     {% load pinax_ratings_tags %}
 ```
 
-Then, if you want to display an overall rating average for an object you can set
-a context variable and display it:
+Then pick a template tag for display or obtaining rating data.
+
+### Template Tags
+
+#### overall_rating
+
+Display an overall rating average for an object:
 
 ```django
     {% overall_rating obj as the_overall_rating %}
@@ -119,13 +124,37 @@ a context variable and display it:
     <div class="overall_rating">{{ the_overall_rating }}</div>
 ```
 
-Likewise for displaying a user's rating:
+Display overall rating average _for a specific category_ for an object:
+
+```django
+    {% overall_rating obj "accuracy" as category_rating %}
+
+    <div class="overall_rating category-accuracy">
+        {{ category_rating }}
+    </div>
+```
+
+#### user_rating
+
+Display a specific user's rating:
 
 ```django
     {% user_rating request.user obj as the_user_rating %}
 
     <div class="user_rating">{{ the_user_rating }}</div>
 ```
+
+Display specific user rating _for a specific category_ for an object:
+
+```django
+    {% user_rating request.user obj "accuracy" as category_rating %}
+
+    <div class="user_rating category-accuracy">
+        {{ category_rating }}
+    </div>
+```
+
+#### user_rating_js
 
 If you want to add an AJAX form for allowing a user to set a rating, add the
 following in the appropriate location on your page:
@@ -141,34 +170,42 @@ libraries and hook up the ratings UI:
     {% user_rating_js request.user obj %}
 ```
 
-If you want to do any rating based on categories of ratings for an object or
-objects then you do the same as above but just use an optional argument on
-the tags:
+Hook up the ratings UI for a specific category:
 
-```django
-    {% overall_rating obj "accuracy" as category_rating %}
-
-    <div class="overall_rating category-accuracy">
-        {{ category_rating }}
-    </div>
-```
-
-and
-
-```django
-    {% user_rating request.user obj "accuracy" as category_rating %}
-
-    <div class="user_rating category-accuracy">
-        {{ category_rating }}
-    </div>
-```
-
-and
 
 ```django
     <div id="user_rating" class="category-accuracy"></div>
 
     {% user_rating_js request.user obj "accuracy" %}
+```
+
+#### ratings
+
+Returns all Ratings for an object type, regardless of category:
+
+```django
+    {% ratings obj as the_ratings %}
+    {% for rating in the_ratings %}
+        Rating: {{ rating.rating }}
+    {% endfor %}
+```
+
+#### user_rating_url
+
+Returns a URL for user to post a rating for an object:
+
+```django
+    {% user_rating_url request.user obj as rating_url %}
+    {{ rating_url }}
+```
+
+#### rating_count
+
+Returns the number of ratings for an object type:
+
+```django
+    {% rating_count obj as count %}
+    {{ obj }} has {{ count }} ratings
 ```
 
 ### Settings
@@ -183,22 +220,18 @@ Defines the number of different rating choices there will be.
 
 Default: `None`
 
-Defines a dictionary of choices for different models for the application of
-ratings along different dimensions rather than just a single rating for an
-object.
-
-It should follow the format of a dictionary of dictionaries. For example, think of
-the context of a website that allowed ratings of photographs and articles
-published by other users:
+Defines a dictionary of rating category choices for application models.
+Each model specified has a dictionary of rating categories, with associated rating prompt string.
+Only rating categories associated with a model in this setting are allowed.
 
 ```python
     PINAX_RATINGS_CATEGORY_CHOICES = {
-        "app.Model": {
+        "app.Photo": {
             "exposure": "How good is the exposure?",
             "framing": "How well was the photo framed?",
             "saturation": "How would you rate the saturation?"
         },
-        "app.Model2": {
+        "app.Story": {
             "grammar": "Good grammar?",
             "complete": "Is the story complete?",
             "compelling": "Is the article compelling?"
@@ -222,6 +255,11 @@ hooking up of a rating UI. This is optional and overridable by the site develope
 
 
 ## Change Log
+
+### 3.0.3
+
+* Improve test clarity and coverage
+* Improve documentation
 
 ### 3.0.2
 

@@ -1,10 +1,17 @@
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
-from django.template import Context, Template
 from django.urls import reverse
 
+from ..categories import category_value
 from ..models import Rating
-from ..templatetags.pinax_ratings_tags import ratings, user_rating_js
+from ..templatetags.pinax_ratings_tags import (
+    overall_rating,
+    rating_count,
+    ratings,
+    user_rating,
+    user_rating_js,
+    user_rating_url,
+)
 from .models import Car
 from .test import TestCase
 
@@ -15,285 +22,182 @@ class TemplateTagsTest(TestCase):
     """
 
     def setUp(self):
-        self.default_rating = 2
-        self.default_category = "handling"
-        self.other_category = "color"
-        self.test_user = self.make_user(username="test_user")
-        self.another_user = self.make_user(username="another_user")
-        self.not_rated_object = self.make_user(username="a_user")
+        self.handling = "handling"
+        self.speed = "speed"
+        self.hamilton = self.make_user(username="lewis_hamilton")
+        self.schumacher = self.make_user(username="michael_schumacher")
+        self.unrated_object = self.make_user(username="unrated_user")
         self.benz = Car.objects.create(name="Mercedes c200")
-        self.post_a_rating(self.test_user, self.default_rating)
 
-    def post_a_rating(self, user, rating, category="handling"):
+    def create_rating(self, user, rating, obj=None, category=""):
         """
         Helper function to post a rating for the benz object of
         type Car used in the tests
         :param user: User
         :param rating: int
+        :param obj: obj
         :param category: str
         :return: http response object
         """
-        with self.login(user):
-            return self.post(
-                "pinax_ratings:rate",
-                content_type_id=ContentType.objects.get_for_model(self.benz).pk,
-                object_id=self.benz.pk,
-                data={
-                    "rating": rating,
-                    "category": category
-                },
-            )
-
-    def config_template_context(self, ctx=None):
-        """
-        Helper function that configures the context for the template
-        :param ctx: dictionary
-        :return: context object
-        """
-        if ctx is None:
-            ctx = {
-                "user": self.test_user,
-                "object": self.benz,
-                "category": self.default_category
-            }
-        context = Context(ctx)
-        return context
-
-    def test_user_rating_tag_with_category(self):
-        """
-        Ensure the template tag user_rating renders a rating
-        as posted by the user on a Car object they are rating
-        for a specified category in the context
-        """
-        template = Template(
-            "{% load pinax_ratings_tags %}"
-            "{% user_rating user object category %}"
+        if not obj:
+            obj = self.benz
+        cat_choice = category_value(obj, category)
+        if not cat_choice:
+            cat_choice = ""
+        Rating.update(
+            rating_object=obj,
+            user=user,
+            category=cat_choice,
+            rating=rating
         )
 
-        context = self.config_template_context()
-
-        rendered = template.render(context)
-        self.assertIn(str(self.default_rating), rendered)
-
-        self.post_a_rating(
-            self.test_user,
-            self.default_rating + 1,
-            self.other_category
-        )
-
-        context = self.config_template_context({
-            "user": self.test_user,
-            "object": self.benz,
-            "category": self.other_category
-        })
-        rendered = template.render(context)
-        self.assertEqual(str(self.default_rating + 1), rendered)
-
-    def test_user_rating_tag_with_category_on_not_rated_object(self):
+    def test_user_rating_with_category(self):
         """
-        This test ensures that a rating of zero is returned when you
-        rate another object other than the one expected to be rated. In
-        this case we are rating a User object instead of a Car object
+        Ensure `user_rating` renders rating posted by specified user.
         """
-        template = Template(
-            "{% load pinax_ratings_tags %}"
-            "{% user_rating user object category %}"
-        )
-        context = self.config_template_context(
-            ctx={
-                "user": self.test_user,
-                "object": self.not_rated_object,
-                "category": self.default_category
-            }
-        )
-        rendered = template.render(context)
-        self.assertEqual(str(0), rendered)
+        # ratings for handling, ensure they are distinct
+        self.create_rating(self.hamilton, 3, category=self.handling)
+        self.create_rating(self.schumacher, 4, category=self.handling)
+        self.assertEqual(user_rating(self.hamilton, self.benz, self.handling), 3)
+        self.assertEqual(user_rating(self.schumacher, self.benz, self.handling), 4)
 
-    def test_user_rating_tag_with_no_category(self):
+        # ratings for speed, different from handling
+        self.create_rating(self.hamilton, 5, category=self.speed)
+        self.create_rating(self.schumacher, 2, category=self.speed)
+        self.assertEqual(user_rating(self.hamilton, self.benz, self.speed), 5)
+        self.assertEqual(user_rating(self.schumacher, self.benz, self.speed), 2)
+
+    def test_user_rating_on_unrated_object(self):
         """
-        Ensure the template tag user_rating renders a rating
-        as posted by the user on a Car object they are rating,
-        regardless of Rating category.
+        Ensure zero is returned from `user_rating` for object without a rating.
         """
+        self.assertEqual(user_rating(self.hamilton, self.unrated_object, self.speed), 0)
+        # Same check, no category
+        self.assertEqual(user_rating(self.hamilton, self.unrated_object), 0)
 
-        template = Template(
-            "{% load pinax_ratings_tags %}"
-            "{% user_rating user object %}"
-        )
-        context = self.config_template_context({
-            "user": self.test_user,
-            "object": self.benz
-        })
+    def test_user_rating_no_category(self):
+        """
+        Ensure `user_rating` returns the average of all ratings for object by user
+        when no category is specified.
+        """
+        # Create first rating, return value should be same
+        self.create_rating(self.schumacher, 5, category=self.handling)
+        self.assertEqual(user_rating(self.schumacher, self.benz), 5)  # == (5) / 1
 
-        rendered = template.render(context)
-        self.assertIn(str(self.default_rating), rendered)
+        # Add second rating in different category, should be averaged with first
+        self.create_rating(self.schumacher, 3, category=self.speed)
+        self.assertEqual(user_rating(self.schumacher, self.benz), 4)  # == (5 + 3) / 2
 
-        self.post_a_rating(
-            self.test_user,
-            self.default_rating + 1,
-            self.other_category
-        )
+        # Add third rating with no category, should be averaged with first two ratings
+        self.create_rating(self.schumacher, 1)
+        self.assertEqual(user_rating(self.schumacher, self.benz), 3)  # == (5 + 3 + 1) / 3
 
-        rendered = template.render(context)
-        self.assertEqual(str(2.5), rendered)
+    def test_user_rating_revised(self):
+        """
+        Ensure `user_rating` returns the latest rating for a category.
+        """
+        # Create first rating, return value should be same
+        self.create_rating(self.schumacher, 5, category=self.handling)
+        self.create_rating(self.schumacher, 2, category=self.handling)
+        self.assertEqual(user_rating(self.schumacher, self.benz), 2)
 
     def test_overall_rating_tag_with_category(self):
         """
-        Ensure the template tag overall_rating renders an
-        overall rating for a specified category in the
-        context
+        Ensure `overall_rating` returns an average rating for
+        a specified category.
         """
+        self.create_rating(self.schumacher, 5, category=self.handling)
+        self.create_rating(self.hamilton, 1, category=self.handling)
+        self.assertEqual(overall_rating(self.benz, self.handling), 3)
 
-        template = Template(
-            "{% load pinax_ratings_tags %}"
-            "{% overall_rating object category %}"
-        )
+        # Add rating for a different category
+        self.create_rating(self.schumacher, 5, category=self.speed)
+        # Overall "handling" rating should be same as before
+        self.assertEqual(overall_rating(self.benz, self.handling), 3)
 
-        # Add rating for a different category, much higher than other rating
-        self.post_a_rating(
-            self.test_user,
-            self.default_rating + 3,
-            self.other_category
-        )
-        # Add rating by different user, same category as setUp rating
-        self.post_a_rating(self.another_user, self.default_rating)
-
-        context = self.config_template_context({
-            "object": self.benz,
-            "category": self.default_category
-        })
-
-        rendered = template.render(context)
-        self.assertEqual(str(2.0), rendered)
-
-    def test_overall_rating_tag_with_category_on_not_rated_object(self):
+    def test_overall_rating_on_unrated_object(self):
         """
-        This test ensures that an overall rating of zero is returned when you
-        rate another object other than the one expected to be rated. In
-        this case we are rating a User object instead of a Car object
+        Ensure zero is returned from `overall_rating` for object without a rating.
         """
-        template = Template(
-            "{% load pinax_ratings_tags %}"
-            "{% overall_rating object category %}"
-        )
-        context = self.config_template_context({
-            "object": self.not_rated_object,
-            "category": self.default_category
-        })
-
-        rendered = template.render(context)
-        self.assertEqual(str(0), rendered)
+        self.assertEqual(overall_rating(self.unrated_object, self.speed), 0)
+        # Same check, no category
+        self.assertEqual(overall_rating(self.unrated_object), 0)
 
     def test_overall_rating_tag_with_no_category(self):
         """
-        Ensure the template tag overall_rating renders an
-        overall rating. in this test, no category is specified
+        Ensure `overall_rating` returns the average of all ratings for object by user
+        when no category is specified.
         """
+        # Create first rating, return value should be same
+        self.create_rating(self.schumacher, 5, category=self.handling)
+        self.assertEqual(overall_rating(self.benz), 5)  # == (5) / 1
 
-        template = Template(
-            "{% load pinax_ratings_tags %}"
-            "{% overall_rating object %}"
-        )
+        # Add second rating in different category, should be averaged with first
+        self.create_rating(self.schumacher, 3, category=self.speed)
+        self.assertEqual(overall_rating(self.benz), 4)  # == (5 + 3) / 2
 
-        self.post_a_rating(
-            self.test_user,
-            self.default_rating + 1,
-            self.other_category
-        )
-
-        context = self.config_template_context({
-            "object": self.benz
-        })
-
-        rendered = template.render(context)
-        # the overall rating should be equal to (2 + 3 /2)
-        self.assertEqual(str(2.5), rendered)
+        # Add third rating with no category, should be averaged with first two ratings
+        self.create_rating(self.schumacher, 1)
+        self.assertEqual(overall_rating(self.benz), 3)  # == (5 + 3 + 1) / 3
 
     def test_ratings_tag(self):
         """
-        Ensure a query set is returned
+        Ensure QuerySet of all Ratings for self.benz is returned
         """
+        self.create_rating(self.schumacher, 5)
+        self.create_rating(self.hamilton, 5)
+
         content_type = ContentType.objects.get_for_model(self.benz)
         output = ratings(self.benz)
         expected = Rating.objects.filter(
             content_type=content_type,
             object_id=self.benz.pk
         )
+        self.assertEqual(len(expected), 2)
         self.assertSetEqual(set(output), set(expected))
 
     def test_ratings_tag_with_not_rated_object(self):
         """
-        Ensure a query set is returned
+        Ensure empty list is returned for object without Ratings
         """
-        ContentType.objects.get_for_model(self.not_rated_object)
-        output = ratings(self.not_rated_object)
-        self.assertEqual(len(output), 0)
+        self.assertEqual(ratings(self.unrated_object), [])
 
     def test_user_rating_url_tag(self):
         """
-        Ensure the template tag user_rating_url renders the
-        post ratings url with the correct kwargs
+        Ensure `user_rating_url` returns correct URL for user to post a rating
         """
-
-        template = Template(
-            "{% load pinax_ratings_tags %}"
-            "{% user_rating_url user object %}"
-        )
-        context = Context({
-            "user": self.test_user,
-            "object": self.benz
-        })
-        rendered = template.render(context)
-        url_path = reverse(
+        tag_url = user_rating_url(self.hamilton, self.benz)
+        expected_path = reverse(
             "pinax_ratings:rate",
             kwargs={
                 "content_type_id": ContentType.objects.get_for_model(self.benz).pk,
                 "object_id": self.benz.pk
             })
-        self.assertIn(url_path, rendered)
+        self.assertEqual(tag_url, expected_path)
 
     def test_rating_count_tag(self):
         """
-        Ensure the template tag rating_count renders the
-        correct count
+        Ensure `rating_count` returns the number of ratings on an object
+        regardless of who rated and regardless of category.
         """
-
-        template = Template(
-            "{% load pinax_ratings_tags %}"
-            "{% rating_count object %}"
-        )
-
-        self.post_a_rating(
-            self.another_user,
-            self.default_rating + 1,
-            self.other_category
-        )
-
-        context = self.config_template_context({
-            "object": self.benz
-        })
-
-        rendered = template.render(context)
-        # ratings count should be 2
-        self.assertEqual(str(2), rendered)
+        self.create_rating(self.schumacher, 5)
+        self.create_rating(self.schumacher, 5, category=self.speed)
+        self.create_rating(self.schumacher, 5, obj=self.unrated_object)  # should not be included
+        self.create_rating(self.hamilton, 5)
+        self.create_rating(self.hamilton, 5, category=self.handling)
+        count = rating_count(self.benz)
+        self.assertEqual(count, 4)
 
     def test_user_rating_js_tag(self):
         """
-        Ensure the correct context is returned for the
-        template
+        Ensure the correct context is returned
         """
-
-        self.post_a_rating(
-            self.another_user,
-            self.default_rating + 1,
-            self.other_category
-        )
-
-        context = user_rating_js(self.another_user, self.benz, self.other_category)
+        self.create_rating(self.schumacher, 5, category=self.speed)
+        context = user_rating_js(self.schumacher, self.benz, self.speed)
 
         self.assertEqual(context["obj"], self.benz)
-        self.assertEqual(context["category"], "color")
-        self.assertEqual(context["the_user_rating"], self.default_rating + 1)
+        self.assertEqual(context["category"], self.speed)
+        self.assertEqual(context["the_user_rating"], 5)
         self.assertEqual(context["STATIC_URL"], settings.STATIC_URL)
         self.assertEqual(
             context["post_url"],

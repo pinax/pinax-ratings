@@ -8,11 +8,15 @@ class OverallRatingManager(models.Manager):
 
     def top_rated(self, klass, category=""):
         cat = category_value(klass, category)
-        return self.filter(
+        if cat is None:
+            cat = ""
+        qs = self.filter(
             content_type=ContentType.objects.get_for_model(klass),
             category=cat
-        ).extra(
+        )
+        qs = qs.extra(
             select={
                 "sortable_rating": "COALESCE(rating, 0)"
             }
-        ).order_by("-sortable_rating")
+        )
+        return qs.order_by("-sortable_rating")
