@@ -70,7 +70,7 @@ Add `pinax.ratings` to your ``INSTALLED_APPS`` setting:
     ]
 ```
 
-Next, add `pinax.ratings.urls` to your project urlpatterns:
+Add `pinax.ratings.urls` to your project urlpatterns:
 
 ```python
     urlpatterns = [
