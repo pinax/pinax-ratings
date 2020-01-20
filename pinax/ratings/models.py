@@ -5,7 +5,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import Avg
 from django.utils import timezone
-from django.utils.encoding import python_2_unicode_compatible
 
 from .categories import RATING_CATEGORY_CHOICES
 from .managers import OverallRatingManager
@@ -37,7 +36,6 @@ class OverallRating(models.Model):
         self.save()
 
 
-@python_2_unicode_compatible
 class Rating(models.Model):
     overall_rating = models.ForeignKey(OverallRating, null=True, related_name="ratings", on_delete=models.CASCADE)
     object_id = models.IntegerField(db_index=True)
