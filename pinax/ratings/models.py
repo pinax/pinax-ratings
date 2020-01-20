@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import Avg
@@ -8,11 +9,6 @@ from django.utils import timezone
 
 from .categories import RATING_CATEGORY_CHOICES
 from .managers import OverallRatingManager
-
-try:
-    from django.contrib.contenttypes.fields import GenericForeignKey
-except ImportError:  # pragma: no cover
-    from django.contrib.contenttypes.generic import GenericForeignKey  # pragma: no cover
 
 
 class OverallRating(models.Model):
