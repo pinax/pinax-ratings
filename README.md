@@ -45,10 +45,10 @@ Django apps, themes, and starter project templates. This collection can be found
 
 #### Supported Django and Python versions
 
-Django \ Python | 2.7 | 3.4 | 3.5 | 3.6
---------------- | --- | --- | --- | ---
-1.11 |  *  |  *  |  *  |  *  
-2.0  |     |  *  |  *  |  *
+Django \ Python | 3.4 | 3.5 | 3.6
+--------------- | --- | --- | ---
+1.11 |  *  |  *  |  *
+2.0  |  *  |  *  |  *
 
 
 ## Documentation
@@ -238,7 +238,7 @@ Only rating categories associated with a model in this setting are allowed.
         }
     }
 ```
-    
+
 ### Templates
 
 `pinax-ratings` comes with two minimal template snippets rendered
