@@ -1,10 +1,10 @@
 all: init test
 
 init:
-	python setup.py develop
-	pip install detox coverage
+	# python setup.py develop
+	# pip install tox coverage<5
 
 test:
 	coverage erase
-	detox
+	tox --parallel
 	coverage html
