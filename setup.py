@@ -46,8 +46,6 @@ Supported Django and Python Versions
 +=================+=====+=====+=====+
 |  1.11           |  *  |  *  |     |
 +-----------------+-----+-----+-----+
-|  2.1            |  *  |  *  |     |
-+-----------------+-----+-----+-----+
 |  2.2            |  *  |  *  |  *  |
 +-----------------+-----+-----+-----+
 |  3.0            |  *  |  *  |  *  |
@@ -83,7 +81,6 @@ setup(
         "Environment :: Web Environment",
         "Framework :: Django",
         "Framework :: Django :: 1.11",
-        "Framework :: Django :: 2.1",
         "Framework :: Django :: 2.2",
         "Framework :: Django :: 3.0",
         "Intended Audience :: Developers",

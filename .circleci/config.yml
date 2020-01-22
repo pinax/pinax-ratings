@@ -44,12 +44,6 @@ jobs:
       - image: circleci/python:3.6
         environment:
           TOXENV=py36-dj111
-  py36dj21:
-    <<: *common
-    docker:
-      - image: circleci/python:3.6
-        environment:
-          TOXENV=py36-dj21
   py36dj22:
     <<: *common
     docker:
@@ -68,12 +62,6 @@ jobs:
       - image: circleci/python:3.7
         environment:
           TOXENV=py37-dj111
-  py37dj21:
-    <<: *common
-    docker:
-      - image: circleci/python:3.7
-        environment:
-          TOXENV=py37-dj21
   py37dj22:
     <<: *common
     docker:
