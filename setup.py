@@ -54,7 +54,7 @@ Supported Django and Python Versions
 
 setup(
     author="Pinax Team",
-    author_email="team@pinaxprojects.com",
+    author_email="team@pinaxproject.com",
     description="a ratings app for Django",
     name="pinax-ratings",
     long_description=LONG_DESCRIPTION,
