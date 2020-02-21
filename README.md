@@ -257,6 +257,8 @@ hooking up of a rating UI. This is optional and overridable by the site develope
 
 ## Change Log
 
+### 4.0.0
+
 ### 3.0.3
 
 * Improve test clarity and coverage
