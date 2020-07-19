@@ -1,19 +1,14 @@
 from decimal import Decimal
 
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import Avg
 from django.utils import timezone
-from django.utils.encoding import python_2_unicode_compatible
 
 from .categories import RATING_CATEGORY_CHOICES
 from .managers import OverallRatingManager
-
-try:
-    from django.contrib.contenttypes.fields import GenericForeignKey
-except ImportError:  # pragma: no cover
-    from django.contrib.contenttypes.generic import GenericForeignKey  # pragma: no cover
 
 
 class OverallRating(models.Model):
@@ -37,7 +32,6 @@ class OverallRating(models.Model):
         self.save()
 
 
-@python_2_unicode_compatible
 class Rating(models.Model):
     overall_rating = models.ForeignKey(OverallRating, null=True, related_name="ratings", on_delete=models.CASCADE)
     object_id = models.IntegerField(db_index=True)

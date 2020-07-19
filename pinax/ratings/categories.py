@@ -5,7 +5,7 @@ RATING_CATEGORY_CHOICES = []
 RATING_CATEGORY_LOOKUP = {}
 for model_str in RATING_CATEGORY_CHOICES_DICT.keys():
     for choice in RATING_CATEGORY_CHOICES_DICT[model_str].keys():
-        slug = "%s-%s" % (model_str, choice)
+        slug = "{}-{}".format(model_str, choice)
         RATING_CATEGORY_CHOICES.append((choice, slug))
         RATING_CATEGORY_LOOKUP[slug] = choice
 
