@@ -62,6 +62,17 @@ class Rating(models.Model):
         if rating_obj and rating == 0:
             return rating_obj.clear()
 
+        if rating == 0:
+            overall = OverallRating.objects.filter(
+                object_id=rating_object.pk,
+                content_type=ct,
+                category=category
+            ).first()
+            if overall:
+                return overall.rating or 0
+            else:
+                return 0
+
         if rating_obj is None:
             rating_obj = cls.objects.create(
                 object_id=rating_object.pk,
@@ -70,11 +81,13 @@ class Rating(models.Model):
                 category=category,
                 rating=rating
             )
+
         overall, _ = OverallRating.objects.get_or_create(
             object_id=rating_object.pk,
             content_type=ct,
             category=category
         )
+
         rating_obj.overall_rating = overall
         rating_obj.rating = rating
         rating_obj.save()
