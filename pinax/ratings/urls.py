@@ -1,4 +1,7 @@
-from django.conf.urls import url
+try:
+    from django.conf.urls import url
+except ImportError:  # pragma: no cover
+    from django.urls import re_path as url  # pragma: no cover
 
 from pinax.ratings import views
 
