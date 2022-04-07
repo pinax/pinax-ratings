@@ -39,6 +39,7 @@ class Rating(models.Model):
     content_object = GenericForeignKey()
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     rating = models.IntegerField()
+    feedback = models.TextField(blank=True, default="")
     timestamp = models.DateTimeField(default=timezone.now)
     category = models.CharField(max_length=250, blank=True, choices=RATING_CATEGORY_CHOICES)
 

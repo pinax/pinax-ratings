@@ -29,7 +29,8 @@ class RatingModelTests(TestCase):
             content_type=ContentType.objects.get_for_model(self.expedition),
             user=self.paltman,
             category=self.speed,
-            rating=5
+            rating=5,
+            feedback="Ford expedition is very good!"
         )
         self.overall_rating_object = OverallRating.objects.create(
             object_id=self.expedition.pk,
